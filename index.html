@@ -1,0 +1,1326 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#4FB3E8">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="さんすうクイズ">
+<title>さんすうクイズ 〜ちょうちょをあつめよう〜</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --sora:#4FB3E8; --himawari:#FFC93C; --wakaba:#6BCB77; --sango:#FF7B54;
+    --ink:#2B3A55; --ground:#EAF5FD; --card:#FFFFFF; --card-edge:#D5E9F7;
+    --btn:#FFFFFF; --btn-edge:#BFE0F5; --muted:#7A8BA8; --sil:#C7D4E4;
+    --bar-bg:#DCEAF6;
+    --shadow:0 6px 0 rgba(43,58,85,.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#F0F6FF; --ground:#16233F; --card:#22355C; --card-edge:#31497A;
+      --btn:#2B4066; --btn-edge:#3D5787; --muted:#9FB2D4; --sil:#3A5078;
+      --bar-bg:#2B4066;
+      --shadow:0 6px 0 rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#F0F6FF; --ground:#16233F; --card:#22355C; --card-edge:#31497A;
+    --btn:#2B4066; --btn-edge:#3D5787; --muted:#9FB2D4; --sil:#3A5078;
+    --bar-bg:#2B4066;
+    --shadow:0 6px 0 rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+    --sora:#4FB3E8; --himawari:#FFC93C; --wakaba:#6BCB77; --sango:#FF7B54;
+    --ink:#2B3A55; --ground:#EAF5FD; --card:#FFFFFF; --card-edge:#D5E9F7;
+    --btn:#FFFFFF; --btn-edge:#BFE0F5; --muted:#7A8BA8; --sil:#C7D4E4;
+    --bar-bg:#DCEAF6;
+    --shadow:0 6px 0 rgba(43,58,85,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",system-ui,sans-serif;
+    background:var(--ground); color:var(--ink);
+    min-height:100vh; display:flex; flex-direction:column; align-items:center;
+    padding:16px; -webkit-tap-highlight-color:transparent;
+  }
+  .wrap{width:100%; max-width:560px; display:flex; flex-direction:column; gap:14px}
+
+  header{display:flex; align-items:center; justify-content:space-between; gap:8px}
+  h1{font-size:1.25rem; margin:0; letter-spacing:.04em}
+  h1 .dot{color:var(--sango)}
+  .hdr-btns{display:flex; gap:8px}
+  .icon-btn{
+    font-size:1.05rem; background:var(--card); border:2px solid var(--card-edge);
+    border-radius:16px; min-width:46px; height:46px; padding:0 10px; cursor:pointer; box-shadow:var(--shadow);
+    font-family:inherit; color:var(--ink); font-weight:700;
+  }
+  button:focus-visible{outline:3px solid var(--himawari); outline-offset:2px}
+
+  .card{
+    background:var(--card); border:2px solid var(--card-edge); border-radius:24px;
+    padding:20px; box-shadow:var(--shadow);
+  }
+  .screen{display:none; flex-direction:column; gap:14px}
+  .screen.active{display:flex}
+  .label{font-size:.85rem; color:var(--muted); letter-spacing:.15em; margin-bottom:10px}
+
+  /* ---------- start ---------- */
+  .greet{text-align:center; font-size:1rem; margin:0; text-wrap:balance}
+  .choice-row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .pick{
+    font-family:inherit; font-size:1rem; font-weight:700; color:var(--ink);
+    background:var(--btn); border:2px solid var(--btn-edge); border-radius:18px;
+    padding:12px 6px; cursor:pointer; box-shadow:var(--shadow);
+    transition:transform .08s ease;
+  }
+  .pick .big{display:block; font-size:1.4rem; margin-bottom:4px}
+  .pick small{display:block; font-weight:400; color:var(--muted); font-size:.75rem; margin-top:3px}
+  .pick[aria-pressed="true"]{border-color:var(--sora); background:var(--sora); color:#fff}
+  .pick[aria-pressed="true"] small{color:#EAF6FF}
+  .pick:active{transform:translateY(3px)}
+  .go-btn{
+    font-family:inherit; font-size:1.35rem; font-weight:800; letter-spacing:.1em;
+    background:var(--himawari); color:#5A4300; border:none; border-radius:22px;
+    padding:17px; cursor:pointer; box-shadow:0 6px 0 #D9A320;
+    transition:transform .08s ease;
+  }
+  .go-btn:active{transform:translateY(4px); box-shadow:0 2px 0 #D9A320}
+  .go-btn.quiet{background:var(--card); color:var(--ink); box-shadow:var(--shadow); border:2px solid var(--card-edge); font-size:1.1rem}
+
+  /* ---------- mushikago (garden) ---------- */
+  .garden-flex{display:flex; align-items:center; gap:14px}
+  .garden-pic{flex:0 0 auto}
+  .garden-info{display:flex; flex-direction:column; gap:6px; min-width:0}
+  .g-stage{font-weight:800; font-size:1.05rem}
+  .g-dots{display:flex; gap:5px}
+  .g-dots span{width:14px; height:14px; border-radius:50%; background:var(--bar-bg); display:inline-block}
+  .g-dots span.on{background:var(--wakaba)}
+  .g-msg{font-size:.85rem; color:var(--muted); text-wrap:balance}
+  .g-streak{font-size:.85rem; font-weight:700; color:var(--sango)}
+
+  /* ---------- quiz ---------- */
+  .hud{display:flex; justify-content:space-between; align-items:center; font-weight:700}
+  .hud .timer{font-variant-numeric:tabular-nums; font-size:1.2rem; background:var(--card);
+    border:2px solid var(--card-edge); border-radius:14px; padding:6px 14px; box-shadow:var(--shadow)}
+  .hud .qcount{color:var(--muted); font-size:1rem; font-variant-numeric:tabular-nums}
+  .bar{height:12px; background:var(--bar-bg); border-radius:99px; overflow:hidden}
+  .bar i{display:block; height:100%; width:0%; background:var(--wakaba); border-radius:99px; transition:width .25s ease}
+  .question{
+    text-align:center; font-size:clamp(3rem, 14vw, 4.4rem); font-weight:800;
+    font-variant-numeric:tabular-nums; letter-spacing:.04em; margin:6px 0 2px;
+  }
+  .question .op{color:var(--sora)}
+  .question .op.minus{color:var(--sango)}
+  .question .q{color:var(--himawari)}
+  .prompt{text-align:center; color:var(--muted); font-size:.95rem; margin:0}
+  .answers{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px}
+  .ans{
+    font-family:inherit; font-size:2.1rem; font-weight:800; color:var(--ink);
+    font-variant-numeric:tabular-nums;
+    background:var(--btn); border:3px solid var(--btn-edge); border-radius:20px;
+    padding:17px 0; cursor:pointer; box-shadow:var(--shadow);
+    transition:transform .08s ease;
+  }
+  .ans:active{transform:translateY(3px)}
+  .ans.correct{background:var(--wakaba); border-color:var(--wakaba); color:#fff}
+  .ans.wrong{background:var(--sango); border-color:var(--sango); color:#fff}
+  .ans:disabled{cursor:default}
+
+  .feedback{
+    position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+    background:rgba(43,58,85,.35); z-index:10;
+  }
+  .feedback.show{display:flex}
+  .fb-card{
+    background:var(--card); border-radius:28px; padding:26px 40px; text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.25); animation:pop .22s ease;
+  }
+  .fb-mark{font-size:3.4rem; line-height:1}
+  .fb-text{font-size:1.3rem; font-weight:800; margin-top:6px}
+  .fb-sub{font-size:1.05rem; color:var(--muted); margin-top:6px; font-variant-numeric:tabular-nums}
+  @keyframes pop{from{transform:scale(.6); opacity:0} to{transform:scale(1); opacity:1}}
+
+  /* ---------- result ---------- */
+  .result-head{text-align:center; font-size:1.25rem; font-weight:800; margin:0; text-wrap:balance}
+  .result-stats{display:flex; justify-content:center; gap:18px; flex-wrap:wrap;
+    font-variant-numeric:tabular-nums; color:var(--muted); font-size:.95rem}
+  .result-stats b{color:var(--ink); font-size:1.25rem}
+  .bf-stage{display:flex; justify-content:center; margin:4px 0}
+  .bf-reveal{animation:pop .5s ease}
+  .bf-name{text-align:center; font-size:1.35rem; font-weight:800; margin:2px 0 0}
+  .bf-rarity{text-align:center; color:var(--himawari); font-size:1.15rem; letter-spacing:.2em; margin:2px 0 0}
+  .bf-rarity small{color:var(--muted); letter-spacing:0; margin-left:6px; font-size:.8rem}
+  .bf-hint{text-align:center; color:var(--muted); font-size:.85rem; margin:8px 0 0; text-wrap:balance}
+  .best-badge{text-align:center; font-weight:800; color:var(--sango); margin:4px 0 0}
+  .btn-row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .hatch-head{text-align:center; font-size:1.3rem; font-weight:800; margin:0; color:var(--sango); text-wrap:balance}
+
+  /* ---------- today's record ---------- */
+  .rec-row{display:flex; justify-content:space-between; align-items:center; font-size:.95rem; padding:4px 2px}
+  .rec-row b{font-variant-numeric:tabular-nums; font-size:1.05rem}
+  .rec-row .no{color:var(--muted); font-weight:400}
+
+  /* ---------- rest (break) overlay ---------- */
+  .restover{
+    position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+    background:rgba(43,58,85,.78); z-index:20; padding:16px;
+  }
+  .restover.show{display:flex}
+  .rest-msg{color:var(--muted); font-size:1rem; margin:8px 0 0; line-height:1.7; text-wrap:balance}
+  .rest-timer{font-size:2.6rem; font-weight:800; margin-top:10px; font-variant-numeric:tabular-nums; color:var(--sora)}
+
+  /* ---------- zukan ---------- */
+  .zukan-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+  .zk-cell{background:var(--btn); border:2px solid var(--btn-edge); border-radius:16px;
+    padding:8px 4px; text-align:center}
+  .zk-cell.raised{border-color:var(--himawari)}
+  .zk-cell .nm{font-size:.68rem; font-weight:700; margin-top:2px; display:block}
+  .zk-cell .ct{font-size:.66rem; color:var(--muted); display:block}
+  .zk-cell.none .nm{color:var(--muted)}
+  .zk-stars{font-size:.6rem; color:var(--himawari); display:block; letter-spacing:.08em}
+  .hist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px}
+  .hist li{background:var(--btn); border:2px solid var(--btn-edge); border-radius:14px;
+    padding:10px 14px; font-size:.95rem}
+  .hist .hd{font-weight:800; color:var(--sora); margin-right:8px}
+  .hist-empty{color:var(--muted); text-align:center; font-size:.95rem}
+
+  /* ---------- save / transfer ---------- */
+  details summary{cursor:pointer; font-weight:700; font-size:.95rem}
+  details[open] summary{margin-bottom:10px}
+  .save-note{font-size:.82rem; color:var(--muted); line-height:1.6; margin:0 0 10px}
+  textarea.code{
+    width:100%; min-height:64px; resize:vertical; font-size:.72rem; line-height:1.4;
+    font-family:Consolas,Menlo,monospace; word-break:break-all;
+    border:2px solid var(--btn-edge); border-radius:12px; background:var(--btn);
+    color:var(--ink); padding:8px;
+  }
+  .mini-btn{
+    font-family:inherit; font-size:.9rem; font-weight:700; color:var(--ink);
+    background:var(--btn); border:2px solid var(--btn-edge); border-radius:12px;
+    padding:8px 16px; cursor:pointer; box-shadow:var(--shadow); margin-top:6px;
+  }
+  .save-status{font-size:.85rem; font-weight:700; margin-left:10px; color:var(--wakaba)}
+  .save-status.err{color:var(--sango)}
+
+  canvas#confetti{position:fixed; inset:0; pointer-events:none; z-index:5}
+  footer{color:var(--muted); font-size:.78rem; text-align:center; margin-top:2px}
+
+  /* ---------- butterfly svg animation ---------- */
+  .bf .wingL{transform:translate(200px,0) scaleX(-1)}
+  .bf.flap{animation:floaty 3.2s ease-in-out infinite}
+  .bf.flap .wingR{animation:flapR .85s ease-in-out infinite alternate; transform-origin:100px 100px}
+  .bf.flap .wingL{animation:flapL .85s ease-in-out infinite alternate; transform-origin:100px 100px}
+  @keyframes flapR{from{transform:scaleX(1)} to{transform:scaleX(.82)}}
+  @keyframes flapL{from{transform:translate(200px,0) scaleX(-1)} to{transform:translate(200px,0) scaleX(-.82)}}
+  @keyframes floaty{0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-7px) rotate(2deg)}}
+  .wiggle{animation:wiggle 2.4s ease-in-out infinite}
+  @keyframes wiggle{0%,100%{transform:rotate(0)} 30%{transform:rotate(-3deg)} 60%{transform:rotate(3deg)}}
+  @media (prefers-reduced-motion: reduce){
+    .fb-card,.bf-reveal{animation:none}
+    .bf.flap,.bf.flap .wingR,.bf.flap .wingL,.wiggle{animation:none}
+    .pick,.ans,.go-btn,.bar i{transition:none}
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>さんすう<span class="dot">クイズ</span> 🦋</h1>
+    <div class="hdr-btns">
+      <button class="icon-btn" id="zukanBtn" aria-label="ちょうちょ ずかん">🦋 ずかん</button>
+      <button class="icon-btn" id="soundBtn" aria-label="おとの オン・オフ">🔊</button>
+    </div>
+  </header>
+
+  <!-- start -->
+  <section class="screen active" id="scrStart">
+    <div class="card" id="gardenHome"></div>
+    <div class="card" id="todayRec"></div>
+    <div class="card">
+      <div class="label">もんだいの しゅるい</div>
+      <div class="choice-row" role="group" aria-label="もんだいの しゅるい">
+        <button class="pick" data-mode="add" aria-pressed="true"><span class="big">➕</span>たしざん<small>こたえは 9まで</small></button>
+        <button class="pick" data-mode="sub" aria-pressed="false"><span class="big">➖</span>ひきざん<small>ひきざんだけの ちょうちょが いるよ！</small></button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">コース</div>
+      <div class="choice-row" role="group" aria-label="コース">
+        <button class="pick" data-course="10" aria-pressed="true"><span class="big">🌱</span>10もん おためし<small>きがるに チャレンジ</small></button>
+        <button class="pick" data-course="55" aria-pressed="false"><span class="big">⏱️</span>55もん タイムアタック<small>レアな ちょうちょが でやすい！</small></button>
+      </div>
+    </div>
+    <button class="go-btn" id="startBtn">スタート！</button>
+    <p class="greet">クリアすると ちょうちょが とんでくるよ！ どのこが くるかは おたのしみ♪<br>まいにち あそぶと むしかごの ようちゅうが そだつよ 🐛</p>
+  </section>
+
+  <!-- quiz -->
+  <section class="screen" id="scrQuiz">
+    <div class="hud">
+      <span class="qcount" id="qnum">1 / 55 もん</span>
+      <span class="timer" id="timer">⏱ 0:00</span>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="card">
+      <p class="question" id="question"></p>
+      <p class="prompt">こたえは どれかな？</p>
+      <div class="answers" id="answers"></div>
+    </div>
+  </section>
+
+  <!-- result -->
+  <section class="screen" id="scrResult">
+    <div class="card">
+      <p class="result-head" id="resultHead">ちょうちょが とんできた！</p>
+      <div class="bf-stage" id="bfStage"></div>
+      <p class="bf-name" id="bfName"></p>
+      <p class="bf-rarity" id="bfRarity"></p>
+      <p class="best-badge" id="bestBadge" hidden>✨ ベストきろく こうしん！</p>
+      <div class="result-stats" id="resultStats"></div>
+      <p class="bf-hint" id="bfHint"></p>
+    </div>
+    <div class="card" id="gardenResult"></div>
+    <div class="btn-row">
+      <button class="go-btn" id="againBtn">もういちど</button>
+      <button class="go-btn quiet" id="toZukanBtn">🦋 ずかんをみる</button>
+    </div>
+    <p class="save-note" style="text-align:center">📝 きろくが きえないように、「ずかん」の ひきつぎコードを ほぞんしてね(おうちのひとと いっしょに)</p>
+  </section>
+
+  <!-- zukan -->
+  <section class="screen" id="scrZukan">
+    <div class="card">
+      <div class="label">ちょうちょ ずかん</div>
+      <div class="zukan-grid" id="zukanGrid"></div>
+    </div>
+    <div class="card">
+      <div class="label">つかまえた きろく</div>
+      <ul class="hist" id="histList"></ul>
+    </div>
+    <div class="card">
+      <details>
+        <summary>📝 きろくの ほぞん・ひきつぎ(おうちのひとへ)</summary>
+        <p class="save-note">この画面はセキュリティ保護された環境で動くため、端末によっては記録が自動保存されません(特にiPhone)。下の「ひきつぎコード」をコピーしてメモアプリなどに保存しておき、記録が消えたときは「よみこむ」欄に貼り付けて復元してください。遊んだあとに毎回コピーし直すと安心です。</p>
+        <div class="label">ひきつぎコード(コピーしてメモに保存)</div>
+        <textarea class="code" id="saveCode" readonly aria-label="ひきつぎコード"></textarea>
+        <div>
+          <button class="mini-btn" id="copyCodeBtn">📋 コードをコピー</button>
+          <span class="save-status" id="copyStatus"></span>
+        </div>
+        <div class="label" style="margin-top:16px">コードから よみこむ</div>
+        <textarea class="code" id="loadCode" placeholder="ここに ひきつぎコードを はりつけ" aria-label="ひきつぎコードの入力"></textarea>
+        <div>
+          <button class="mini-btn" id="loadCodeBtn">✅ よみこむ</button>
+          <span class="save-status" id="loadStatus"></span>
+        </div>
+      </details>
+    </div>
+    <button class="go-btn quiet" id="backBtn">← もどる</button>
+  </section>
+
+  <footer>1ねんせいの たしざん・ひきざん(こたえは 0〜9)</footer>
+</div>
+
+<div class="feedback" id="feedback" aria-live="polite">
+  <div class="fb-card">
+    <div class="fb-mark" id="fbMark">❌</div>
+    <div class="fb-text" id="fbText">ざんねん…</div>
+    <div class="fb-sub" id="fbSub"></div>
+  </div>
+</div>
+<div class="restover" id="restOver">
+  <div class="fb-card">
+    <div class="fb-mark">🍵</div>
+    <div class="fb-text">おやすみタイム</div>
+    <p class="rest-msg">30ぷん がんばったね！<br>おみずを のんで めと あたまを やすめよう</p>
+    <div class="rest-timer" id="restTimer">10:00</div>
+  </div>
+</div>
+<canvas id="confetti"></canvas>
+
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const ri = n => Math.floor(Math.random() * n);
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ================= butterflies ================= */
+  const FW = 'M102,86 C112,58 138,32 168,26 C186,23 195,35 189,52 C181,73 150,93 116,97 C107,98 103,94 102,86 Z';
+  const HW = 'M104,99 C122,97 147,101 159,115 C169,127 165,147 148,151 C129,155 111,136 105,113 C103,106 103,102 104,99 Z';
+  const TAIL = 'M138,149 C142,158 145,169 140,178 C133,170 130,158 132,150 Z';
+  let uidN = 0;
+
+  /* quiz-reward species (tier 1-4) + raised-only species (tier 5) */
+  const SPECIES = [
+    {key:'monshiro', name:'モンシロチョウ',   tier:1, base:'#F8F8F0', body:'#54544C'},
+    {key:'monki',    name:'モンキチョウ',     tier:1, base:'#F3D763', body:'#6B5B2E'},
+    {key:'beni',     name:'ベニシジミ',       tier:1, base:'#F2933E', hind:'#9A9188', body:'#4A4038'},
+    {key:'yamato',   name:'ヤマトシジミ',     tier:1, base:'#B3CBEC', body:'#5A6478'},
+    {key:'nami',     name:'ナミアゲハ',       tier:2, base:'#EDE3A9', body:'#2A2822', tail:true, tailC:'#26241E'},
+    {key:'ki',       name:'キアゲハ',         tier:2, base:'#F2CE4E', body:'#2A2822', tail:true, tailC:'#26241E'},
+    {key:'hyomon',   name:'ツマグロヒョウモン', tier:2, base:'#F09A40', body:'#4A3A28'},
+    {key:'ruri',     name:'ルリタテハ',       tier:2, base:'#26304E', body:'#1C2438'},
+    {key:'aosuji',   name:'アオスジアゲハ',   tier:3, base:'#23282E', body:'#16191E', tail:true, tailC:'#23282E'},
+    {key:'kuro',     name:'クロアゲハ',       tier:3, base:'#2A282E', body:'#1B191F', tail:true, tailC:'#2A282E'},
+    {key:'murasaki', name:'オオムラサキ',     tier:3, base:'#423650', body:'#2C2438'},
+    {key:'kabamadara', name:'オオカバマダラ', tier:4, base:'#E8842C', body:'#26221E'},
+    {key:'miyama',   name:'ミヤマカラスアゲハ', tier:4, base:'#101418', body:'#0A0D10', tail:true, tailC:'#101418'},
+    /* --- raised only (mushikago) --- */
+    {key:'gifu', name:'ギフチョウ', tier:5, raise:true, base:'#F0DE6A', body:'#2A2820', tail:true, tailC:'#26241E',
+      larva:{body:'#3A3A34', ring:'#55554C', dots:'#E8A03C'}, pupa:'#8A7A4A'},
+    {key:'asagi', name:'アサギマダラ', tier:5, raise:true, base:'#4A3A32', hind:'#7A4636', body:'#33261F',
+      larva:{body:'#F2F2E8', ring:'#26241E', dots:'#F0D050'}, pupa:'#9FD8B0'},
+    {key:'oogomadara', name:'オオゴマダラ', tier:5, raise:true, base:'#F4F4EE', body:'#3A3A36',
+      larva:{body:'#2B2B2B', ring:'#F0F0E8', dots:'#E04A50'}, pupa:'#E8C23C'},
+    {key:'morpho', name:'モルフォチョウ', tier:5, raise:true, base:'#2E8CE8', body:'#1C2430',
+      larva:{body:'#8A5A3C', ring:'#C89A6A', dots:'#E8D0A0'}, pupa:'#8AB86A'},
+    {key:'alexandra', name:'アレクサンドラトリバネアゲハ', tier:5, raise:true, base:'#1A1E22', body:'#E8B83C', tail:false,
+      larva:{body:'#4A2430', ring:'#6A3440', dots:'#D84848'}, pupa:'#8A6A4A'},
+    /* --- legendary quiz drops (appended last to keep save-code indexes stable) --- */
+    {key:'karna',    name:'カルナルリモンアゲハ', tier:5, base:'#14181E', body:'#0E1114', tail:true, tailC:'#14181E'},
+    {key:'ulysses',  name:'オオルリアゲハ',   tier:5, base:'#14181E', body:'#101820', tail:true, tailC:'#14181E'},
+    {key:'paradisea', name:'ゴクラクトリバネアゲハ', tier:5, base:'#1A1E20', body:'#8A6A2A', tail:true, tailC:'#E8C83C'},
+    /* --- subtraction-only drops (appended last to keep save-code indexes stable) --- */
+    {key:'kitateha', name:'キタテハ',         tier:1, sub:true, base:'#E8A23C', body:'#5A4630'},
+    {key:'seseri',   name:'イチモンジセセリ', tier:1, sub:true, base:'#8A6A48', body:'#5A452E'},
+    {key:'tsubame',  name:'ツバメシジミ',     tier:1, sub:true, base:'#A8BEE8', body:'#56607A', tail:true, tailC:'#9AB0DC'},
+    {key:'tsumaki',  name:'ツマキチョウ',     tier:2, sub:true, base:'#F6F2E2', body:'#5A5648'},
+    {key:'akatateha', name:'アカタテハ',      tier:2, sub:true, base:'#38302C', hind:'#8A5A42', body:'#26201C'},
+    {key:'gomadara', name:'ゴマダラチョウ',   tier:2, sub:true, base:'#3A3A3A', body:'#2A2A2A'},
+    {key:'midori',   name:'ミドリシジミ',     tier:3, sub:true, base:'#38B878', body:'#24302A'},
+    {key:'uragin',   name:'ウラギンシジミ',   tier:3, sub:true, base:'#E8E4DC', body:'#5A5248'},
+    {key:'kujaku',   name:'クジャクチョウ',   tier:4, sub:true, base:'#C04838', body:'#3A2420'}
+  ];
+  const RAISED = SPECIES.filter(s => s.raise);
+  const TIER_LABEL = {1:'よくみる', 2:'ときどき', 3:'レア', 4:'ちょうレア', 5:'でんせつ'};
+  const spByKey = k => SPECIES.find(s => s.key === k);
+
+  function pattern(sp, u){
+    const cf = `clip-path="url(#${u}fw)"`, ch = `clip-path="url(#${u}hw)"`;
+    switch(sp.key){
+      case 'monshiro': return `
+        <path d="M148,16 L200,14 L200,58 C186,66 172,60 158,46 Z" fill="#44443E" ${cf}/>
+        <circle cx="141" cy="66" r="6.5" fill="#44443E"/>`;
+      case 'monki': return `
+        <path d="M148,16 L200,14 L200,58 C186,66 172,60 158,46 Z" fill="#6B5B33" ${cf}/>
+        <circle cx="137" cy="64" r="6" fill="#E8973F"/>
+        <circle cx="132" cy="122" r="5" fill="#E8C87A"/>`;
+      case 'beni': return `
+        <path d="${FW}" fill="none" stroke="#5A5148" stroke-width="8" ${cf}/>
+        <circle cx="130" cy="55" r="4" fill="#3F3831"/><circle cx="148" cy="50" r="4" fill="#3F3831"/>
+        <circle cx="140" cy="70" r="4" fill="#3F3831"/><circle cx="122" cy="72" r="3.5" fill="#3F3831"/>
+        <path d="M120,150 C135,155 150,150 160,138 L150,128 C138,140 126,144 116,142 Z" fill="#F2933E" ${ch}/>`;
+      case 'yamato': return `
+        <path d="${FW}" fill="none" stroke="#5E6B80" stroke-width="5" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#5E6B80" stroke-width="5" ${ch}/>
+        <circle cx="132" cy="58" r="3" fill="#52627A"/><circle cx="146" cy="60" r="3" fill="#52627A"/>
+        <circle cx="124" cy="74" r="3" fill="#52627A"/><circle cx="130" cy="118" r="3" fill="#52627A"/>
+        <circle cx="142" cy="126" r="3" fill="#52627A"/>`;
+      case 'nami': case 'ki': case 'gifu': {
+        const extra = sp.key === 'gifu'
+          ? `<circle cx="124" cy="141" r="4.5" fill="#E05A48"/><circle cx="137" cy="146" r="4.5" fill="#E05A48"/>
+             <circle cx="150" cy="141" r="4" fill="#5A9BD8"/>`
+          : `<circle cx="124" cy="139" r="4" fill="#5A9BD8"/><circle cx="136" cy="144" r="4" fill="#5A9BD8"/>
+             <circle cx="149" cy="141" r="5" fill="#E86A3C"/>`;
+        return `
+        <g stroke="#26241E" stroke-width="7" stroke-linecap="round" ${cf}>
+          <line x1="104" y1="88" x2="136" y2="26"/><line x1="108" y1="90" x2="158" y2="30"/>
+          <line x1="112" y1="92" x2="178" y2="42"/>
+        </g>
+        <path d="${FW}" fill="none" stroke="#26241E" stroke-width="12" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#26241E" stroke-width="11" ${ch}/>
+        <g stroke="#26241E" stroke-width="6" stroke-linecap="round" ${ch}>
+          <line x1="106" y1="102" x2="140" y2="106"/>
+        </g>${extra}`;
+      }
+      case 'hyomon': return `
+        <path d="M150,18 L200,14 L200,54 C188,62 176,58 162,46 Z" fill="#33302C" ${cf}/>
+        <circle cx="176" cy="36" r="4" fill="#FFFFFF" ${cf}/>
+        <g fill="#33302C">
+          <circle cx="120" cy="60" r="4"/><circle cx="138" cy="52" r="4"/><circle cx="128" cy="78" r="4"/>
+          <circle cx="146" cy="68" r="4"/><circle cx="160" cy="60" r="3.5"/>
+          <circle cx="122" cy="115" r="4"/><circle cx="136" cy="122" r="4"/>
+          <circle cx="148" cy="128" r="3.5"/><circle cx="126" cy="136" r="3.5"/>
+        </g>
+        <path d="${HW}" fill="none" stroke="#33302C" stroke-width="6" ${ch}/>`;
+      case 'ruri': return `
+        <rect x="116" y="-10" width="24" height="220" fill="#79AEF0" transform="rotate(18 128 100)" ${cf}/>
+        <rect x="116" y="-10" width="24" height="220" fill="#79AEF0" transform="rotate(18 128 100)" ${ch}/>
+        <circle cx="172" cy="34" r="3" fill="#D8E4F4"/><circle cx="180" cy="44" r="3" fill="#D8E4F4"/>`;
+      case 'aosuji': return `
+        <rect x="118" y="-10" width="26" height="220" fill="#47D6C4" transform="rotate(20 131 100)" ${cf}/>
+        <rect x="118" y="-10" width="26" height="220" fill="#47D6C4" transform="rotate(20 131 100)" ${ch}/>
+        <circle cx="134" cy="140" r="3.5" fill="#E05A60"/>`;
+      case 'kuro': return `
+        <g stroke="#3E3C44" stroke-width="5" stroke-linecap="round" ${cf}>
+          <line x1="106" y1="88" x2="150" y2="32"/><line x1="110" y1="91" x2="170" y2="42"/>
+        </g>
+        <circle cx="124" cy="141" r="5" fill="#E04A50"/><circle cx="138" cy="146" r="5" fill="#E04A50"/>
+        <circle cx="151" cy="141" r="5" fill="#E04A50"/>
+        <circle cx="122" cy="137" r="4" fill="#2A282E"/><circle cx="136" cy="142" r="4" fill="#2A282E"/>
+        <circle cx="149" cy="137" r="4" fill="#2A282E"/>`;
+      case 'murasaki': return `
+        <path d="${FW}" fill="url(#${u}gp)" ${cf}/>
+        <path d="${HW}" fill="url(#${u}gp)" ${ch}/>
+        <g fill="#F2EFE8">
+          <circle cx="150" cy="50" r="3.5"/><circle cx="161" cy="62" r="3.5"/><circle cx="138" cy="66" r="3.5"/>
+          <circle cx="132" cy="120" r="3.5"/><circle cx="146" cy="126" r="3.5"/>
+        </g>
+        <circle cx="149" cy="142" r="4" fill="#E8C24A"/>`;
+      case 'kabamadara': return `
+        <g stroke="#26221E" stroke-width="4" fill="none" ${cf}>
+          <path d="M104,88 C120,70 140,50 168,32"/><path d="M106,90 C130,78 155,60 182,44"/>
+          <path d="M110,92 C135,86 160,74 186,56"/>
+        </g>
+        <g stroke="#26221E" stroke-width="4" fill="none" ${ch}>
+          <path d="M106,102 C124,108 140,118 152,132"/><path d="M106,106 C118,118 128,132 138,146"/>
+        </g>
+        <path d="${FW}" fill="none" stroke="#26221E" stroke-width="11" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#26221E" stroke-width="10" ${ch}/>
+        <g fill="#FFFFFF">
+          <circle cx="178" cy="32" r="2.5"/><circle cx="188" cy="46" r="2.5"/><circle cx="180" cy="62" r="2.5"/>
+          <circle cx="162" cy="82" r="2.5"/><circle cx="156" cy="122" r="2.5"/><circle cx="146" cy="142" r="2.5"/>
+        </g>`;
+      case 'miyama': return `
+        <rect x="110" y="-10" width="44" height="220" fill="url(#${u}gm)" opacity=".85" transform="rotate(22 132 100)" ${cf}/>
+        <rect x="104" y="-10" width="50" height="220" fill="url(#${u}gm)" opacity=".7" transform="rotate(22 129 100)" ${ch}/>
+        <circle cx="128" cy="144" r="3.5" fill="#E05A60"/>`;
+      case 'karna': return `
+        <g fill="#3ED0C0" opacity=".85">
+          <circle cx="116" cy="82" r="2"/><circle cx="124" cy="70" r="2"/><circle cx="133" cy="58" r="2"/>
+          <circle cx="144" cy="47" r="2"/><circle cx="156" cy="38" r="2"/><circle cx="168" cy="32" r="2"/>
+          <circle cx="126" cy="88" r="2"/><circle cx="138" cy="74" r="2"/><circle cx="152" cy="60" r="2"/>
+          <circle cx="164" cy="48" r="2"/><circle cx="146" cy="84" r="2"/><circle cx="160" cy="70" r="2"/>
+        </g>
+        <ellipse cx="128" cy="120" rx="25" ry="19" fill="url(#${u}gm)" ${ch}/>
+        <circle cx="148" cy="140" r="3" fill="#E05A60"/>`;
+      case 'ulysses': return `
+        <path d="M104,90 C112,62 132,40 160,32 C152,58 138,80 116,94 Z" fill="url(#${u}gb)" ${cf}/>
+        <ellipse cx="124" cy="116" rx="19" ry="15" fill="url(#${u}gb)" ${ch}/>`;
+      case 'paradisea': return `
+        <rect x="118" y="-10" width="22" height="220" fill="#35D08A" transform="rotate(24 129 100)" ${cf}/>
+        <path d="M104,90 C114,66 132,46 156,36" stroke="#35D08A" stroke-width="5" fill="none" ${cf}/>
+        <ellipse cx="130" cy="122" rx="25" ry="18" fill="#E8C83C" ${ch}/>
+        <circle cx="132" cy="122" r="4.5" fill="#1A1E20"/>
+        <path d="${HW}" fill="none" stroke="#1A1E20" stroke-width="7" ${ch}/>`;
+      case 'asagi': return `
+        <g fill="#BFE3DE">
+          <ellipse cx="126" cy="72" rx="13" ry="9" transform="rotate(-24 126 72)" ${cf}/>
+          <ellipse cx="148" cy="52" rx="14" ry="9" transform="rotate(-30 148 52)" ${cf}/>
+          <ellipse cx="170" cy="38" rx="9" ry="6" transform="rotate(-32 170 38)" ${cf}/>
+          <ellipse cx="134" cy="88" rx="9" ry="6" transform="rotate(-16 134 88)" ${cf}/>
+          <ellipse cx="124" cy="114" rx="9" ry="7" ${ch}/>
+          <ellipse cx="140" cy="126" rx="8" ry="6" ${ch}/>
+          <ellipse cx="128" cy="136" rx="6" ry="5" ${ch}/>
+        </g>`;
+      case 'oogomadara': return `
+        <g stroke="#33332E" stroke-width="2.5" fill="none" opacity=".9">
+          <path d="M104,88 C124,68 146,46 174,30" ${cf}/><path d="M108,92 C134,80 160,64 186,48" ${cf}/>
+          <path d="M106,102 C124,110 140,122 152,136" ${ch}/>
+        </g>
+        <g fill="#33332E">
+          <circle cx="128" cy="58" r="4"/><circle cx="148" cy="46" r="4"/><circle cx="164" cy="60" r="4"/>
+          <circle cx="136" cy="76" r="4"/><circle cx="156" cy="80" r="3.5"/><circle cx="176" cy="40" r="3.5"/>
+          <circle cx="124" cy="112" r="4"/><circle cx="140" cy="120" r="4"/><circle cx="150" cy="134" r="3.5"/>
+          <circle cx="128" cy="134" r="3.5"/>
+        </g>
+        <path d="${FW}" fill="none" stroke="#33332E" stroke-width="6" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#33332E" stroke-width="6" ${ch}/>`;
+      case 'morpho': return `
+        <path d="${FW}" fill="url(#${u}gb)" ${cf}/>
+        <path d="${HW}" fill="url(#${u}gb)" ${ch}/>
+        <path d="${FW}" fill="none" stroke="#14181E" stroke-width="10" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#14181E" stroke-width="9" ${ch}/>
+        <circle cx="176" cy="34" r="3" fill="#EAF4FF"/><circle cx="184" cy="46" r="3" fill="#EAF4FF"/>`;
+      case 'kitateha': return `
+        <path d="M148,16 L200,14 L200,52 C188,60 174,56 160,44 Z" fill="#4A3826" ${cf}/>
+        <g fill="#4A3826">
+          <circle cx="126" cy="58" r="4"/><circle cx="144" cy="50" r="4"/><circle cx="132" cy="76" r="4"/>
+          <circle cx="120" cy="116" r="4"/><circle cx="136" cy="124" r="3.5"/>
+        </g>
+        <path d="${HW}" fill="none" stroke="#4A3826" stroke-width="5" ${ch}/>
+        <circle cx="130" cy="136" r="2.5" fill="#7AC8E0"/>`;
+      case 'seseri': return `
+        <g fill="#F2ECD8">
+          <circle cx="118" cy="112" r="3.5"/><circle cx="128" cy="118" r="3.5"/>
+          <circle cx="138" cy="124" r="3.5"/><circle cx="148" cy="130" r="3.5"/>
+          <circle cx="140" cy="52" r="3"/><circle cx="152" cy="44" r="3"/>
+        </g>
+        <path d="${FW}" fill="none" stroke="#6A5238" stroke-width="5" ${cf}/>`;
+      case 'tsubame': return `
+        <path d="${FW}" fill="none" stroke="#66708C" stroke-width="5" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#66708C" stroke-width="5" ${ch}/>
+        <circle cx="138" cy="138" r="4" fill="#E8933C"/>
+        <circle cx="128" cy="60" r="3" fill="#66708C"/><circle cx="142" cy="66" r="3" fill="#66708C"/>`;
+      case 'tsumaki': return `
+        <path d="M150,14 L200,12 L200,50 C186,58 170,50 158,40 Z" fill="#F0A03C" ${cf}/>
+        <circle cx="140" cy="60" r="4" fill="#5A5648"/>
+        <path d="${HW}" fill="none" stroke="#C8C2A0" stroke-width="4" ${ch}/>`;
+      case 'akatateha': return `
+        <path d="M110,92 C130,74 148,54 166,36" stroke="#E86038" stroke-width="12" fill="none" ${cf}/>
+        <g fill="#F2ECE0">
+          <circle cx="172" cy="30" r="3.5"/><circle cx="182" cy="42" r="3"/><circle cx="168" cy="52" r="2.5"/>
+        </g>
+        <path d="M112,140 C128,150 146,148 160,136 L152,126 C140,136 126,138 118,132 Z" fill="#E86038" ${ch}/>`;
+      case 'gomadara': return `
+        <g fill="#F2F2EC">
+          <circle cx="124" cy="60" r="5"/><circle cx="142" cy="50" r="5"/><circle cx="158" cy="40" r="4"/>
+          <circle cx="132" cy="78" r="4"/><circle cx="150" cy="66" r="4"/>
+          <circle cx="122" cy="114" r="5"/><circle cx="136" cy="122" r="4"/><circle cx="148" cy="132" r="4"/>
+        </g>
+        <circle cx="146" cy="142" r="3.5" fill="#E8A03C"/>`;
+      case 'midori': return `
+        <path d="${FW}" fill="url(#${u}gm)" opacity=".7" ${cf}/>
+        <path d="${FW}" fill="none" stroke="#1E4A38" stroke-width="6" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#1E4A38" stroke-width="5" ${ch}/>`;
+      case 'uragin': return `
+        <path d="M116,80 C126,62 140,50 156,44 C158,58 148,74 132,84 Z" fill="#E05A2C" ${cf}/>
+        <path d="${FW}" fill="none" stroke="#8A8478" stroke-width="6" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#8A8478" stroke-width="5" ${ch}/>`;
+      case 'kujaku': return `
+        <circle cx="146" cy="54" r="13" fill="#E8B83C" ${cf}/>
+        <circle cx="146" cy="54" r="8" fill="#4A66B0" ${cf}/>
+        <circle cx="149" cy="51" r="3" fill="#E8E8F0" ${cf}/>
+        <circle cx="128" cy="122" r="11" fill="#3A3230" ${ch}/>
+        <circle cx="128" cy="122" r="7" fill="#4A66B0" ${ch}/>
+        <circle cx="131" cy="119" r="2.5" fill="#D8D8E8" ${ch}/>
+        <path d="${FW}" fill="none" stroke="#5A3A28" stroke-width="7" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#5A3A28" stroke-width="6" ${ch}/>`;
+      case 'alexandra': return `
+        <rect x="112" y="-10" width="20" height="220" fill="#2FD08A" transform="rotate(24 122 100)" ${cf}/>
+        <rect x="148" y="-10" width="18" height="220" fill="#2FD08A" transform="rotate(24 157 100)" ${cf}/>
+        <ellipse cx="130" cy="122" rx="22" ry="16" fill="#3EC89A" ${ch}/>
+        <circle cx="132" cy="122" r="4" fill="#1A1E22"/>
+        <path d="${HW}" fill="none" stroke="#1A1E22" stroke-width="8" ${ch}/>`;
+      default: return '';
+    }
+  }
+
+  function butterflySVG(sp, opts){
+    opts = opts || {};
+    const size = opts.size || 170;
+    const sil = !!opts.silhouette;
+    const u = 'bf' + (++uidN) + '_';
+    const baseF = sil ? 'var(--sil)' : sp.base;
+    const baseH = sil ? 'var(--sil)' : (sp.hind || sp.base);
+    const body = sil ? 'var(--sil)' : (sp.body || '#3A3A38');
+    let wing = `<path d="${FW}" fill="${baseF}"/><path d="${HW}" fill="${baseH}"/>`;
+    if(sp.tail) wing += `<path d="${TAIL}" fill="${sil ? 'var(--sil)' : (sp.tailC || sp.base)}"/>`;
+    if(!sil) wing += pattern(sp, u);
+    return `<svg class="bf${opts.flap && !reduceMotion ? ' flap' : ''}" viewBox="0 0 200 188" width="${size}" height="${Math.round(size * 0.94)}" role="img" aria-label="${sil ? 'まだみつけていない ちょうちょ' : sp.name}">
+      <defs>
+        <clipPath id="${u}fw"><path d="${FW}"/></clipPath>
+        <clipPath id="${u}hw"><path d="${HW}"/></clipPath>
+        <linearGradient id="${u}gp" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#8A5FD0" stop-opacity=".95"/>
+          <stop offset=".6" stop-color="#8A5FD0" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="${u}gm" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#38E0B0"/><stop offset="1" stop-color="#3E86E8"/>
+        </linearGradient>
+        <linearGradient id="${u}gb" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#6FD0F8"/><stop offset="1" stop-color="#1E5FC8"/>
+        </linearGradient>
+      </defs>
+      <g class="wingR">${wing}</g>
+      <g class="wingL">${wing}</g>
+      <ellipse cx="100" cy="100" rx="5.5" ry="28" fill="${body}"/>
+      <circle cx="100" cy="68" r="6.5" fill="${body}"/>
+      <path d="M97,63 C90,52 84,45 77,39" stroke="${body}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M103,63 C110,52 116,45 123,39" stroke="${body}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <circle cx="77" cy="39" r="2.5" fill="${body}"/><circle cx="123" cy="39" r="2.5" fill="${body}"/>
+    </svg>`;
+  }
+
+  /* ---- mushikago stage art (egg / larva / pupa) ---- */
+  const LEAF = `<path d="M30,118 C50,96 120,90 176,104 C160,126 80,136 40,128 C34,126 30,122 30,118 Z" fill="#7CBF6B"/>
+    <path d="M40,120 C80,110 130,104 168,106" stroke="#5EA352" stroke-width="3" fill="none"/>`;
+
+  function eggSVG(size){
+    return `<svg class="wiggle" viewBox="0 0 200 150" width="${size}" role="img" aria-label="たまご">
+      ${LEAF}
+      <ellipse cx="100" cy="82" rx="19" ry="24" fill="#F8F2D8" stroke="#E0D6A8" stroke-width="3"/>
+      <ellipse cx="93" cy="72" rx="5" ry="8" fill="#FFFDF4"/>
+    </svg>`;
+  }
+
+  function larvaSVG(sp, growth, size){
+    /* growth 1..4 — 1-2: small form, 3-4: final-instar form (different pattern) */
+    const L = sp.larva;
+    const big = growth >= 3;
+    const r = [0, 11, 13, 15, 17][growth];
+    const n = [0, 4, 5, 5, 6][growth];
+    const y = 100 - r * 0.3;
+    let segs = '', dots = '';
+    const startX = 100 - (n - 1) * r * 0.78 / 2 - r * 0.4;
+    for(let i = 0; i < n; i++){
+      const x = startX + i * r * 0.78;
+      const yy = y - Math.sin(i / (n - 1) * Math.PI) * r * 0.35;
+      if(big){
+        segs += `<circle cx="${x}" cy="${yy}" r="${r}" fill="${L.body}"/>`;
+        dots += `<path d="M${x - r*0.7},${yy - r*0.55} Q${x},${yy - r*1.05} ${x + r*0.7},${yy - r*0.55}" stroke="${L.ring}" stroke-width="${r*0.3}" fill="none" stroke-linecap="round"/>`;
+        if(i % 2 === 0) dots += `<circle cx="${x}" cy="${yy + r*0.4}" r="${r*0.24}" fill="${L.dots}"/>`;
+      }else{
+        segs += `<circle cx="${x}" cy="${yy}" r="${r}" fill="${i % 2 ? L.ring : L.body}"/>`;
+        if(i % 2 === 0) dots += `<circle cx="${x}" cy="${yy - r * 0.55}" r="${r * 0.22}" fill="${L.dots}"/>`;
+      }
+    }
+    if(big){
+      /* eyespot on the segment behind the head, like a swallowtail final instar */
+      const ex = startX + (n - 1) * r * 0.78 - r * 0.15;
+      dots += `<circle cx="${ex}" cy="${y - r*0.4}" r="${r*0.42}" fill="#F6F2E0"/>
+        <circle cx="${ex + r*0.08}" cy="${y - r*0.4}" r="${r*0.2}" fill="#222"/>`;
+    }
+    const hx = startX + n * r * 0.78, hy = y;
+    return `<svg class="wiggle" viewBox="0 0 200 150" width="${size}" role="img" aria-label="${big ? 'おおきい ようちゅう' : 'ちいさい ようちゅう'}">
+      ${LEAF}
+      ${segs}${dots}
+      <circle cx="${hx}" cy="${hy}" r="${r * 1.05}" fill="${L.body}"/>
+      <path d="M${hx - r*0.3},${hy - r} C${hx - r*0.5},${hy - r*1.8} ${hx - r*0.9},${hy - r*2.1} ${hx - r*1.2},${hy - r*2.2}" stroke="${L.body}" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M${hx + r*0.3},${hy - r} C${hx + r*0.5},${hy - r*1.8} ${hx + r*0.9},${hy - r*2.1} ${hx + r*1.2},${hy - r*2.2}" stroke="${L.body}" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="${hx - r*0.3}" cy="${hy - r*0.15}" r="${r*0.2}" fill="#FFFFFF"/><circle cx="${hx - r*0.3}" cy="${hy - r*0.15}" r="${r*0.1}" fill="#222"/>
+      <circle cx="${hx + r*0.38}" cy="${hy - r*0.15}" r="${r*0.2}" fill="#FFFFFF"/><circle cx="${hx + r*0.38}" cy="${hy - r*0.15}" r="${r*0.1}" fill="#222"/>
+      <path d="M${hx - r*0.2},${hy + r*0.35} Q${hx + r*0.05},${hy + r*0.55} ${hx + r*0.3},${hy + r*0.35}" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>`;
+  }
+
+  function pupaSVG(sp, size){
+    const c = sp.pupa;
+    return `<svg class="wiggle" viewBox="0 0 200 150" width="${size}" role="img" aria-label="さなぎ">
+      <line x1="40" y1="22" x2="160" y2="18" stroke="#8A6A4A" stroke-width="6" stroke-linecap="round"/>
+      <line x1="100" y1="20" x2="100" y2="34" stroke="#5A4A38" stroke-width="3"/>
+      <path d="M100,34 C118,44 122,72 116,98 C112,118 106,128 100,132 C94,128 88,118 84,98 C78,72 82,44 100,34 Z" fill="${c}"/>
+      <path d="M86,70 C96,74 104,74 114,70 M85,86 C96,90 104,90 115,86 M87,102 C96,106 104,106 113,102" stroke="rgba(0,0,0,.25)" stroke-width="2.5" fill="none"/>
+      <ellipse cx="92" cy="56" rx="4" ry="9" fill="rgba(255,255,255,.5)"/>
+      ${sp.key === 'oogomadara' ? '<circle cx="108" cy="52" r="2.5" fill="#FFF3B0"/><circle cx="112" cy="66" r="2" fill="#FFF3B0"/><circle cx="106" cy="80" r="2" fill="#FFF3B0"/>' : ''}
+    </svg>`;
+  }
+
+  /* ================= storage ================= */
+  const KEY = 'sansuChou';
+  function newEgg(excludeKey){
+    const pool = RAISED.filter(s => s.key !== excludeKey);
+    return {sp: pool[ri(pool.length)].key, days: 0, lastFed: '', bonusDay: ''};
+  }
+  function loadData(){
+    let d = null;
+    try{ d = JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+    if(!d || !Array.isArray(d.hist)) d = {hist: [], best: {}};
+    if(!d.best) d.best = {};
+    if(!d.daily || typeof d.daily !== 'object') d.daily = {};
+    if(!Array.isArray(d.played)) d.played = [];
+    if(!d.garden || !spByKey(d.garden.sp)) d.garden = newEgg();
+    if(typeof d.garden.bonusDay !== 'string') d.garden.bonusDay = '';
+    if(d.lastHatch && !spByKey(d.lastHatch.sp)) delete d.lastHatch;
+    return d;
+  }
+  function saveData(d){ try{ localStorage.setItem(KEY, JSON.stringify(d)); }catch(e){} }
+  let data = loadData();
+  saveData(data);
+
+  /* ---- transfer code (compact, survives storage loss) ---- */
+  const EPOCH = Date.UTC(2026, 0, 1);
+  const dayNum = iso => Math.round((Date.parse(iso + 'T00:00:00Z') - EPOCH) / 86400000);
+  const numDay = n => new Date(EPOCH + n * 86400000).toISOString().slice(0, 10);
+  function encodeSave(){
+    const idx = {};
+    SPECIES.forEach((s, i) => { idx[s.name] = i; });
+    const dl = [];
+    Object.keys(data.daily).forEach(d =>
+      Object.keys(data.daily[d]).forEach(k => dl.push([dayNum(d), k, data.daily[d][k]])));
+    const obj = {
+      v: 2,
+      h: data.hist.map(x => [dayNum(x.d), idx[x.n], x.r ? 1 : 0]),
+      p: data.played.map(dayNum),
+      g: [SPECIES.findIndex(s => s.key === data.garden.sp), data.garden.days,
+          data.garden.lastFed ? dayNum(data.garden.lastFed) : null,
+          data.garden.bonusDay ? dayNum(data.garden.bonusDay) : null],
+      b: data.best,
+      dl: dl,
+      lh: data.lastHatch ? [dayNum(data.lastHatch.d), SPECIES.findIndex(s => s.key === data.lastHatch.sp)] : null
+    };
+    return btoa(JSON.stringify(obj));
+  }
+  function decodeSave(code){
+    const obj = JSON.parse(atob(code.replace(/\s/g, '')));
+    if((obj.v !== 1 && obj.v !== 2) || !Array.isArray(obj.h) || !Array.isArray(obj.g)) throw new Error('bad');
+    const gsp = SPECIES[obj.g[0]];
+    if(!gsp || !gsp.raise) throw new Error('bad');
+    const daily = {};
+    (obj.dl || []).forEach(x => {
+      const d = numDay(x[0]);
+      (daily[d] = daily[d] || {})[x[1]] = +x[2];
+    });
+    const res = {
+      hist: obj.h.map(x => {
+        const sp = SPECIES[x[1]];
+        if(!sp) throw new Error('bad');
+        const e = {d: numDay(x[0]), n: sp.name};
+        if(x[2]) e.r = 1;
+        return e;
+      }),
+      played: (obj.p || []).map(numDay),
+      garden: {sp: gsp.key, days: +obj.g[1] || 0, lastFed: obj.g[2] === null ? '' : numDay(obj.g[2]),
+               bonusDay: obj.g[3] == null ? '' : numDay(obj.g[3])},
+      best: obj.b || {},
+      daily: daily
+    };
+    if(obj.lh && SPECIES[obj.lh[1]]) res.lastHatch = {d: numDay(obj.lh[0]), sp: SPECIES[obj.lh[1]].key};
+    return res;
+  }
+
+  function todayISO(){
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function isoOf(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function isoToJa(iso){
+    const p = iso.split('-');
+    return (+p[1]) + 'がつ' + (+p[2]) + 'にち';
+  }
+  function streak(){
+    const s = new Set(data.played);
+    let n = 0;
+    const d = new Date();
+    if(!s.has(isoOf(d))) d.setDate(d.getDate() - 1);
+    while(s.has(isoOf(d))){ n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+
+  /* ================= sound ================= */
+  let soundOn = true, actx = null;
+  function beep(freqs, dur, type){
+    if(!soundOn) return;
+    try{
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      freqs.forEach((f, i) => {
+        const o = actx.createOscillator(), g = actx.createGain();
+        o.type = type || 'sine'; o.frequency.value = f;
+        const t0 = actx.currentTime + i * dur;
+        g.gain.setValueAtTime(0.001, t0);
+        g.gain.exponentialRampToValueAtTime(0.16, t0 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+        o.connect(g); g.connect(actx.destination);
+        o.start(t0); o.stop(t0 + dur + 0.05);
+      });
+    }catch(e){}
+  }
+  const sndCorrect = () => beep([760], 0.12);
+  const sndWrong   = () => beep([200], 0.3, 'triangle');
+  const sndFanfare = () => beep([523, 659, 784, 1047], 0.15);
+  const sndHatch   = () => beep([523, 659, 784, 1047, 1319, 1568], 0.14);
+  $('soundBtn').addEventListener('click', () => {
+    soundOn = !soundOn;
+    $('soundBtn').textContent = soundOn ? '🔊' : '🔇';
+  });
+
+  /* ================= rest (30 min play -> 10 min break) ================= */
+  const REST_KEY = 'sansuChouRest', PLAY_LIMIT = 30 * 60 * 1000, REST_LEN = 10 * 60 * 1000;
+  let rest = {s: 0, a: 0, r: 0};
+  try{ const rr = JSON.parse(localStorage.getItem(REST_KEY)); if(rr && typeof rr === 'object') rest = {s: +rr.s || 0, a: +rr.a || 0, r: +rr.r || 0}; }catch(e){}
+  function saveRest(){ try{ localStorage.setItem(REST_KEY, JSON.stringify(rest)); }catch(e){} }
+  function touch(){
+    const now = Date.now();
+    if(rest.r && now >= rest.r){ rest.r = 0; rest.s = now; }
+    if(!rest.s || now - rest.a > REST_LEN) rest.s = now;  /* a 10+ min gap resets the 30-min counter */
+    rest.a = now;
+    saveRest();
+  }
+  function needRest(){
+    const now = Date.now();
+    if(rest.r){
+      if(now < rest.r) return true;
+      rest.r = 0; rest.s = now; saveRest();
+      return false;
+    }
+    if(rest.s && now - rest.a <= REST_LEN && now - rest.s >= PLAY_LIMIT){
+      rest.r = now + REST_LEN;
+      saveRest();
+      return true;
+    }
+    return false;
+  }
+  let restTick = 0;
+  function showRest(){
+    const ov = $('restOver');
+    ov.classList.add('show');
+    const upd = () => {
+      const remain = Math.max(0, rest.r - Date.now());
+      $('restTimer').textContent = fmtClock(remain / 1000);
+      if(remain <= 0){
+        clearInterval(restTick);
+        ov.classList.remove('show');
+        const now = Date.now();
+        rest.r = 0; rest.s = now; rest.a = now;
+        saveRest();
+      }
+    };
+    clearInterval(restTick);
+    restTick = setInterval(upd, 500);
+    upd();
+  }
+
+  /* ================= screens ================= */
+  const screens = {start:$('scrStart'), quiz:$('scrQuiz'), result:$('scrResult'), zukan:$('scrZukan')};
+  function show(name){
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[name].classList.add('active');
+  }
+
+  /* ================= garden (mushikago) ================= */
+  /* 6 steps to hatch: 0 egg / 1-2 small larva / 3-4 final-instar larva / 5 pupa / 6 adult */
+  const HATCH_AT = 6;
+  const STAGE_NAME = {0:'たまご', 1:'ちいさい ようちゅう', 2:'ようちゅう', 3:'おおきい ようちゅう', 4:'しゅうれい ようちゅう', 5:'さなぎ'};
+  function gardenArt(g, size){
+    const sp = spByKey(g.sp);
+    if(g.days <= 0) return eggSVG(size);
+    if(g.days >= 5) return pupaSVG(sp, size);
+    return larvaSVG(sp, g.days, size);
+  }
+  function renderToday(){
+    const dt = data.daily[todayISO()] || {};
+    const row = (label, key) =>
+      '<div class="rec-row"><span>' + label + '</span>' +
+      (key in dt ? '<b>' + fmtJa(dt[key]) + '</b>' : '<b class="no">まだ</b>') + '</div>';
+    $('todayRec').innerHTML =
+      '<div class="label">きょうの ベストタイム ⏱</div>' +
+      row('➕ たしざん 55もん', 'add55') +
+      row('➖ ひきざん 55もん', 'sub55');
+  }
+
+  function renderGardenHome(){
+    renderToday();
+    const t = todayISO();
+    const st = streak();
+    /* hatch day: keep showing the adult butterfly all day */
+    if(data.lastHatch && data.lastHatch.d === t){
+      const hsp = spByKey(data.lastHatch.sp);
+      $('gardenHome').innerHTML =
+        '<div class="label">むしかご 🦋</div>' +
+        '<div class="garden-flex">' +
+          '<div class="garden-pic">' + butterflySVG(hsp, {size: 120, flap: true}) + '</div>' +
+          '<div class="garden-info">' +
+            '<span class="g-stage">' + hsp.name + '</span>' +
+            '<span class="g-msg">🎉 きょう ちょうちょに なったよ！ あたらしい たまごは あしたから そだつよ</span>' +
+            (st >= 2 ? '<span class="g-streak">🔥 れんぞく ' + st + 'にちめ！</span>' : '') +
+          '</div>' +
+        '</div>';
+      return;
+    }
+    const g = data.garden;
+    const fedToday = g.lastFed === t;
+    const bonusToday = g.bonusDay === t;
+    const dots = Array.from({length: HATCH_AT}, (_, i) =>
+      '<span class="' + (i < g.days ? 'on' : '') + '"></span>').join('');
+    let msg;
+    if(!fedToday)
+      msg = 'きょうの クイズを クリアすると そだつよ！';
+    else if(!bonusToday)
+      msg = g.days >= 5
+        ? 'たしざん55もんと ひきざん55もんを りょうほう クリアすると、きょう うまれちゃうかも…！？'
+        : 'たしざん55もんと ひきざん55もんを りょうほう クリアすると、きょう もういちど そだつよ！';
+    else
+      msg = g.days >= 5 ? 'さなぎが ぴくぴく うごいてる…！ また あした！'
+                        : 'きょうは たっぷり そだったよ！ また あしたね';
+    $('gardenHome').innerHTML =
+      '<div class="label">むしかご 🐛</div>' +
+      '<div class="garden-flex">' +
+        '<div class="garden-pic">' + gardenArt(g, 130) + '</div>' +
+        '<div class="garden-info">' +
+          '<span class="g-stage">' + STAGE_NAME[Math.min(g.days, 5)] + '</span>' +
+          '<div class="g-dots">' + dots + '</div>' +
+          '<span class="g-msg">あと ' + (HATCH_AT - g.days) + 'かい そだつと ちょうちょに なるよ。' + msg + '</span>' +
+          (st >= 2 ? '<span class="g-streak">🔥 れんぞく ' + st + 'にちめ！</span>' : '') +
+        '</div>' +
+      '</div>';
+  }
+
+  /* ================= start screen ================= */
+  let mode = 'add', course = 10;
+  document.querySelectorAll('[data-mode]').forEach(b =>
+    b.addEventListener('click', () => {
+      mode = b.dataset.mode;
+      document.querySelectorAll('[data-mode]').forEach(x =>
+        x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    }));
+  document.querySelectorAll('[data-course]').forEach(b =>
+    b.addEventListener('click', () => {
+      course = +b.dataset.course;
+      document.querySelectorAll('[data-course]').forEach(x =>
+        x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    }));
+
+  /* ================= questions ================= */
+  function fullSet(m){
+    const qs = [];
+    for(let a = 0; a <= 9; a++)
+      for(let b = 0; b <= 9; b++){
+        if(m === 'add' && a + b <= 9) qs.push({a, b, op:'add', ans:a + b});
+        if(m === 'sub' && a >= b)     qs.push({a, b, op:'sub', ans:a - b});
+      }
+    return qs;
+  }
+  function shuffle(arr){
+    for(let i = arr.length - 1; i > 0; i--){
+      const j = ri(i + 1); [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  function makeChoices(ans){
+    const set = new Set([ans]);
+    const pool = shuffle([ans+1, ans-1, ans+2, ans-2, ans+3, ans-3].filter(v => v >= 0 && v <= 9));
+    while(set.size < 4){
+      const c = pool.length ? pool.pop() : ri(10);
+      set.add(c);
+    }
+    return shuffle([...set]);
+  }
+
+  /* ================= quiz flow ================= */
+  let quizSet = [], qIndex = 0, misses = 0, locked = false;
+  let startT = 0, timerId = 0;
+  const PENALTY = 3;
+
+  function fmtClock(sec){
+    const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+    return m + ':' + String(s).padStart(2, '0');
+  }
+  function fmtJa(sec){
+    if(sec >= 60){
+      let m = Math.floor(sec / 60), s = Math.round(sec % 60);
+      if(s === 60){ m++; s = 0; }
+      return m + 'ふん ' + s + 'びょう';
+    }
+    return (Math.round(sec * 10) / 10) + 'びょう';
+  }
+
+  function startGame(){
+    touch();
+    if(needRest()){ showRest(); return; }
+    quizSet = shuffle(fullSet(mode));
+    if(course === 10) quizSet = quizSet.slice(0, 10);
+    qIndex = 0; misses = 0;
+    show('quiz');
+    startT = performance.now();
+    clearInterval(timerId);
+    timerId = setInterval(() => {
+      $('timer').textContent = '⏱ ' + fmtClock((performance.now() - startT) / 1000);
+    }, 250);
+    $('timer').textContent = '⏱ 0:00';
+    nextQuestion();
+  }
+
+  function nextQuestion(){
+    locked = false;
+    const cur = quizSet[qIndex];
+    $('qnum').textContent = (qIndex + 1) + ' / ' + quizSet.length + ' もん';
+    $('barFill').style.width = (qIndex / quizSet.length * 100) + '%';
+    const opHtml = cur.op === 'add'
+      ? '<span class="op">＋</span>' : '<span class="op minus">−</span>';
+    $('question').innerHTML =
+      cur.a + ' ' + opHtml + ' ' + cur.b + ' ＝ <span class="q">？</span>';
+    const box = $('answers');
+    box.innerHTML = '';
+    makeChoices(cur.ans).forEach(v => {
+      const b = document.createElement('button');
+      b.className = 'ans';
+      b.textContent = v;
+      b.addEventListener('click', () => answer(b, v));
+      box.appendChild(b);
+    });
+  }
+
+  function advance(){
+    qIndex++;
+    if(qIndex < quizSet.length) nextQuestion();
+    else finish();
+  }
+
+  function answer(btn, v){
+    if(locked) return;
+    locked = true;
+    touch();
+    const cur = quizSet[qIndex];
+    const ok = v === cur.ans;
+    const buttons = [...document.querySelectorAll('.ans')];
+    buttons.forEach(b => { b.disabled = true; });
+    btn.classList.add(ok ? 'correct' : 'wrong');
+    if(ok){
+      sndCorrect();
+      $('fbMark').textContent = '⭕';
+      $('fbText').textContent = 'せいかい！';
+      $('fbSub').textContent = '';
+      $('feedback').classList.add('show');
+      setTimeout(() => {
+        $('feedback').classList.remove('show');
+        advance();
+      }, 600);
+    }else{
+      misses++;
+      sndWrong();
+      buttons.forEach(b => { if(+b.textContent === cur.ans) b.classList.add('correct'); });
+      $('fbMark').textContent = '❌';
+      $('fbText').textContent = 'こたえは ' + cur.ans + ' だよ';
+      $('fbSub').textContent = 'タイム +' + PENALTY + 'びょう';
+      $('feedback').classList.add('show');
+      setTimeout(() => {
+        $('feedback').classList.remove('show');
+        advance();
+      }, 1500);
+    }
+  }
+
+  /* ================= result ================= */
+  /* rarity drop rates (%) — gentle odds for 1st graders */
+  const DROP_W = {
+    10: [[1, 40], [2, 30], [3, 18], [4, 8], [5, 4]],
+    55: [[1, 30], [2, 28], [3, 22], [4, 13], [5, 7]]
+  };
+  function pickTier(c){
+    let r = Math.random() * 100;
+    for(const [t, p] of DROP_W[c]){ if((r -= p) < 0) return t; }
+    return 1;
+  }
+
+  function finish(){
+    clearInterval(timerId);
+    $('barFill').style.width = '100%';
+    const elapsed = (performance.now() - startT) / 1000;
+    const finalTime = elapsed + misses * PENALTY;
+    const total = quizSet.length;
+    const t = todayISO();
+
+    /* --- caught butterfly (random by rarity) --- */
+    const tier = pickTier(course);
+    const pool = SPECIES.filter(s => s.tier === tier && !s.raise && (!s.sub || mode === 'sub'));
+    const sp = pool[ri(pool.length)];
+    data.hist.push({d: t, n: sp.name});
+
+    /* --- best times (all-time and today) --- */
+    const bestKey = mode + course;
+    const isBest = !(bestKey in data.best) || finalTime < data.best[bestKey];
+    if(isBest) data.best[bestKey] = Math.round(finalTime * 10) / 10;
+    if(!data.daily[t]) data.daily[t] = {};
+    const isDayBest = !(bestKey in data.daily[t]) || finalTime < data.daily[t][bestKey];
+    if(isDayBest) data.daily[t][bestKey] = Math.round(finalTime * 10) / 10;
+
+    /* --- garden growth --- */
+    if(!data.played.includes(t)) data.played.push(t);
+    const hatchedToday = !!(data.lastHatch && data.lastHatch.d === t);
+    let grew = false, grewBonus = false, hatchedSp = null;
+    if(!hatchedToday){
+      const g = data.garden;
+      if(g.lastFed !== t){ g.days++; g.lastFed = t; grew = true; }
+      /* bonus: clearing BOTH add-55 and sub-55 in one day grows one extra step (max once/day) */
+      const dToday = data.daily[t];
+      if(g.bonusDay !== t && dToday && ('add55' in dToday) && ('sub55' in dToday)){
+        g.days++; g.bonusDay = t; grewBonus = true;
+      }
+      if(g.days >= HATCH_AT){
+        hatchedSp = spByKey(g.sp);
+        data.hist.push({d: t, n: hatchedSp.name, r: 1});
+        data.lastHatch = {d: t, sp: g.sp};
+        data.garden = newEgg(g.sp);
+        /* the new egg starts growing tomorrow — today stays butterfly day */
+        data.garden.lastFed = t;
+        data.garden.bonusDay = t;
+      }
+    }
+    saveData(data);
+
+    /* --- render caught --- */
+    $('resultHead').textContent =
+      tier === 5 ? 'でんせつの ちょうちょが とんできた！！！'
+      : tier === 4 ? 'ちょうレアな ちょうちょが とんできた！！'
+      : tier === 3 ? 'レアな ちょうちょが とんできた！'
+      : 'ちょうちょが とんできた！';
+    $('bfStage').innerHTML = '<div class="bf-reveal">' + butterflySVG(sp, {size: 190, flap: true}) + '</div>';
+    $('bfName').textContent = sp.name;
+    $('bfRarity').innerHTML = '★'.repeat(sp.tier) + '<small>' + TIER_LABEL[sp.tier] + '</small>';
+    const bb = $('bestBadge');
+    bb.hidden = !(isBest || isDayBest);
+    bb.textContent = isBest ? '✨ ベストきろく こうしん！' : '✨ きょうの ベストきろく！';
+    $('resultStats').innerHTML =
+      '<span>せいかい <b>' + (total - misses) + '</b>/' + total + '</span>' +
+      '<span>タイム <b>' + fmtJa(finalTime) + '</b>' +
+      (misses ? ' <span style="font-size:.8rem">(まちがい' + misses + 'かい +' + misses * PENALTY + 'びょう)</span>' : '') +
+      '</span>';
+    $('bfHint').textContent =
+      tier === 5 ? 'せかいでも めったに あえない ちょうちょだよ！ おめでとう！！'
+      : 'つぎは どんな ちょうちょが くるかな？';
+
+    /* --- render garden --- */
+    const gr = $('gardenResult');
+    if(hatchedSp){
+      gr.innerHTML =
+        '<p class="hatch-head">🎉 さなぎから ちょうちょが うまれたよ！！</p>' +
+        '<div class="bf-stage"><div class="bf-reveal">' + butterflySVG(hatchedSp, {size: 200, flap: true}) + '</div></div>' +
+        '<p class="bf-name">' + hatchedSp.name + '</p>' +
+        '<p class="bf-rarity">★★★★★<small>' + TIER_LABEL[5] + '</small></p>' +
+        '<p class="bf-hint">まいにち がんばった きみだけの とくべつな ちょうちょだよ！<br>むしかごには あたらしい たまごが きたよ 🥚</p>';
+      sndHatch();
+    }else if(hatchedToday){
+      const hsp = spByKey(data.lastHatch.sp);
+      gr.innerHTML =
+        '<div class="label">むしかご 🦋</div>' +
+        '<div class="garden-flex">' +
+          '<div class="garden-pic">' + butterflySVG(hsp, {size: 110, flap: true}) + '</div>' +
+          '<div class="garden-info">' +
+            '<span class="g-stage">' + hsp.name + '</span>' +
+            '<span class="g-msg">きょう うまれた ちょうちょが とんでいるよ！ あたらしい たまごは あしたからね</span>' +
+          '</div>' +
+        '</div>';
+    }else{
+      const ng = data.garden;
+      const stName = STAGE_NAME[Math.min(ng.days, 5)];
+      const bonusHint = 'たしざん55もんと ひきざん55もんを りょうほう クリアすると きょう もういちど そだつよ！';
+      let gmsg;
+      if(grewBonus)
+        gmsg = '55もん ボーナス！ もういちど そだったよ！！' + (ng.days >= 5 ? ' あした うまれるかも…！' : ' また あした！');
+      else if(grew)
+        gmsg = ng.days >= 5 ? 'さなぎに なったよ！ あした うまれるかも…！' : bonusHint;
+      else
+        gmsg = ng.bonusDay === t ? 'きょうは もう たっぷり そだったよ。また あした！' : bonusHint;
+      gr.innerHTML =
+        '<div class="label">むしかご 🐛</div>' +
+        '<div class="garden-flex">' +
+          '<div class="garden-pic">' + gardenArt(ng, 110) + '</div>' +
+          '<div class="garden-info">' +
+            '<span class="g-stage">' + stName + (grew || grewBonus ? ' に そだった！' : '') + '</span>' +
+            '<div class="g-dots">' + Array.from({length: HATCH_AT}, (_, i) => '<span class="' + (i < ng.days ? 'on' : '') + '"></span>').join('') + '</div>' +
+            '<span class="g-msg">' + gmsg + '</span>' +
+          '</div>' +
+        '</div>';
+    }
+
+    show('result');
+    if(!hatchedSp) sndFanfare();
+    if((tier >= 4 || hatchedSp) && !reduceMotion) confetti();
+    if(needRest()) showRest();
+  }
+
+  /* ================= zukan ================= */
+  function openZukan(){
+    const counts = {};
+    data.hist.forEach(h => { counts[h.n] = (counts[h.n] || 0) + 1; });
+    const grid = $('zukanGrid');
+    grid.innerHTML = '';
+    const ordered = [...SPECIES].sort((a, b) =>
+      (a.tier - b.tier) || ((a.raise ? 1 : 0) - (b.raise ? 1 : 0)) || ((a.sub ? 1 : 0) - (b.sub ? 1 : 0)));
+    ordered.forEach(sp => {
+      const got = counts[sp.name];
+      const cell = document.createElement('div');
+      cell.className = 'zk-cell' + (got ? '' : ' none') + (sp.raise && got ? ' raised' : '');
+      cell.innerHTML =
+        butterflySVG(sp, {size: 84, silhouette: !got}) +
+        '<span class="zk-stars">' + '★'.repeat(sp.tier) + '</span>' +
+        '<span class="nm">' + (got ? sp.name : '？？？') + '</span>' +
+        '<span class="ct">' + (got ? '×' + got : (sp.raise ? 'そだてると あえるよ' : (sp.sub ? 'ひきざんで あえるよ' : 'まだ みつけてない'))) + '</span>';
+      grid.appendChild(cell);
+    });
+    const byDate = {};
+    data.hist.forEach(h => { (byDate[h.d] = byDate[h.d] || []).push(h.n + (h.r ? '🐛' : '')); });
+    const list = $('histList');
+    list.innerHTML = '';
+    const dates = Object.keys(byDate).sort().reverse();
+    if(!dates.length){
+      list.innerHTML = '<li class="hist-empty">まだ きろくが ないよ。クイズを クリアして ちょうちょを つかまえよう！</li>';
+    }else{
+      dates.forEach(d => {
+        const li = document.createElement('li');
+        let timesHtml = '';
+        const dt = data.daily[d];
+        if(dt){
+          const parts = Object.keys(dt).sort().map(k =>
+            (k.indexOf('add') === 0 ? 'たしざん' : 'ひきざん') + k.slice(3) + 'もん ' + fmtJa(dt[k]));
+          if(parts.length)
+            timesHtml = '<br><small style="color:var(--muted)">⏱ ベストタイム: ' + parts.join(' ／ ') + '</small>';
+        }
+        li.innerHTML = '<span class="hd">' + isoToJa(d) + '</span>' + byDate[d].join('、') + timesHtml;
+        list.appendChild(li);
+      });
+    }
+    $('saveCode').value = encodeSave();
+    $('copyStatus').textContent = '';
+    $('loadStatus').textContent = '';
+    show('zukan');
+  }
+
+  /* ---- transfer code UI ---- */
+  $('copyCodeBtn').addEventListener('click', () => {
+    const ta = $('saveCode');
+    const done = () => { $('copyStatus').textContent = '✅ コピーしました'; };
+    const fail = () => {
+      ta.focus(); ta.select();
+      try{ document.execCommand('copy'); done(); }
+      catch(e){ $('copyStatus').textContent = '長押しでコピーしてください'; }
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(ta.value).then(done, fail);
+    }else fail();
+  });
+  $('loadCodeBtn').addEventListener('click', () => {
+    const code = $('loadCode').value.trim();
+    const st = $('loadStatus');
+    if(!code){ st.textContent = 'コードを はりつけてね'; st.classList.add('err'); return; }
+    try{
+      data = decodeSave(code);
+      saveData(data);
+      $('loadCode').value = '';
+      renderGardenHome();
+      openZukan();
+      st.textContent = '✅ きろくを よみこんだよ！';
+      st.classList.remove('err');
+    }catch(e){
+      st.textContent = '❌ コードが ちがうみたい…';
+      st.classList.add('err');
+    }
+  });
+
+  /* ================= confetti ================= */
+  function confetti(){
+    const cv = $('confetti'), c = cv.getContext('2d');
+    cv.width = innerWidth; cv.height = innerHeight;
+    const colors = ['#4FB3E8','#FFC93C','#6BCB77','#FF7B54','#B983FF'];
+    const bits = Array.from({length: 90}, () => ({
+      x: Math.random() * cv.width, y: -20 - Math.random() * cv.height * 0.5,
+      w: 6 + Math.random() * 6, h: 8 + Math.random() * 8,
+      vy: 2 + Math.random() * 3, vx: -1 + Math.random() * 2,
+      rot: Math.random() * Math.PI, vr: -0.1 + Math.random() * 0.2,
+      color: colors[ri(colors.length)]
+    }));
+    let frames = 0;
+    (function tick(){
+      c.clearRect(0, 0, cv.width, cv.height);
+      bits.forEach(p => {
+        p.y += p.vy; p.x += p.vx; p.rot += p.vr;
+        c.save(); c.translate(p.x, p.y); c.rotate(p.rot);
+        c.fillStyle = p.color; c.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        c.restore();
+      });
+      if(++frames < 240) requestAnimationFrame(tick);
+      else c.clearRect(0, 0, cv.width, cv.height);
+    })();
+  }
+
+  /* ================= wiring ================= */
+  $('startBtn').addEventListener('click', startGame);
+  $('againBtn').addEventListener('click', () => { renderGardenHome(); show('start'); });
+  $('zukanBtn').addEventListener('click', openZukan);
+  $('toZukanBtn').addEventListener('click', openZukan);
+  $('backBtn').addEventListener('click', () => { renderGardenHome(); show('start'); });
+  renderGardenHome();
+  if(needRest()) showRest();
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+</script>
+</html>
