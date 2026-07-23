@@ -394,7 +394,12 @@
     {key:'gomadara', name:'ゴマダラチョウ',   tier:2, sub:true, base:'#3A3A3A', body:'#2A2A2A'},
     {key:'midori',   name:'ミドリシジミ',     tier:3, sub:true, base:'#38B878', body:'#24302A'},
     {key:'uragin',   name:'ウラギンシジミ',   tier:3, sub:true, base:'#E8E4DC', body:'#5A5248'},
-    {key:'kujaku',   name:'クジャクチョウ',   tier:4, sub:true, base:'#C04838', body:'#3A2420'}
+    {key:'kujaku',   name:'クジャクチョウ',   tier:4, sub:true, base:'#C04838', body:'#3A2420'},
+    /* --- eyespot butterflies (appended last to keep save-code indexes stable) --- */
+    {key:'janome',   name:'ジャノメチョウ',   tier:1, base:'#5E4E3E', body:'#3A3026'},
+    {key:'tateha',   name:'タテハモドキ',     tier:2, base:'#E0912E', body:'#5A4028'},
+    {key:'oohikage', name:'オオヒカゲ',       tier:2, base:'#8A7A62', body:'#4A4034'},
+    {key:'aotateha', name:'アオタテハモドキ', tier:3, base:'#3A362E', hind:'#2E6BC8', body:'#2A2620'}
   ];
   const RAISED = SPECIES.filter(s => s.raise);
   const TIER_LABEL = {1:'よくみる', 2:'ときどき', 3:'レア', 4:'ちょうレア', 5:'でんせつ'};
@@ -597,6 +602,45 @@
         <ellipse cx="130" cy="122" rx="22" ry="16" fill="#3EC89A" ${ch}/>
         <circle cx="132" cy="122" r="4" fill="#1A1E22"/>
         <path d="${HW}" fill="none" stroke="#1A1E22" stroke-width="8" ${ch}/>`;
+      case 'janome': return `
+        <circle cx="150" cy="52" r="11" fill="#2A2420" ${cf}/>
+        <circle cx="150" cy="52" r="7" fill="#17130F" ${cf}/>
+        <circle cx="153" cy="49" r="2.6" fill="#EAEAF0" ${cf}/>
+        <circle cx="127" cy="72" r="7" fill="#2A2420" ${cf}/>
+        <circle cx="129" cy="70" r="1.7" fill="#EAEAF0" ${cf}/>
+        <circle cx="132" cy="122" r="6" fill="#2A2420" ${ch}/>
+        <circle cx="134" cy="120" r="1.5" fill="#EAEAF0" ${ch}/>
+        <path d="${HW}" fill="none" stroke="#4A3E30" stroke-width="4" ${ch}/>`;
+      case 'tateha': return `
+        <circle cx="150" cy="50" r="9" fill="#3A2C1E" ${cf}/>
+        <circle cx="150" cy="50" r="5" fill="#D06A2C" ${cf}/>
+        <circle cx="152" cy="48" r="1.8" fill="#F0E0C0" ${cf}/>
+        <circle cx="130" cy="120" r="13" fill="#3A2C1E" ${ch}/>
+        <circle cx="130" cy="120" r="9" fill="#5A78C0" ${ch}/>
+        <circle cx="130" cy="120" r="4" fill="#C85030" ${ch}/>
+        <circle cx="132" cy="118" r="1.8" fill="#F0E0C0" ${ch}/>
+        <path d="${FW}" fill="none" stroke="#7A4A22" stroke-width="4" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#7A4A22" stroke-width="4" ${ch}/>`;
+      case 'oohikage': return `
+        <g fill="#2E2820"><circle cx="150" cy="46" r="5"/><circle cx="163" cy="58" r="5.5"/><circle cx="167" cy="74" r="5"/></g>
+        <g fill="#E8C860"><circle cx="150" cy="46" r="2.2"/><circle cx="163" cy="58" r="2.4"/><circle cx="167" cy="74" r="2.2"/></g>
+        <g fill="#141210"><circle cx="150" cy="46" r="1"/><circle cx="163" cy="58" r="1.1"/><circle cx="167" cy="74" r="1"/></g>
+        <g fill="#2E2820"><circle cx="130" cy="120" r="4.6"/><circle cx="145" cy="128" r="4.6"/></g>
+        <g fill="#E8C860"><circle cx="130" cy="120" r="1.9"/><circle cx="145" cy="128" r="1.9"/></g>
+        <path d="${FW}" fill="none" stroke="#5A4E3C" stroke-width="4" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#5A4E3C" stroke-width="4" ${ch}/>`;
+      case 'aotateha': return `
+        <circle cx="150" cy="50" r="8" fill="#17130F" ${cf}/>
+        <circle cx="150" cy="50" r="5.5" fill="#E88A2C" ${cf}/>
+        <circle cx="150" cy="50" r="2.4" fill="#26221C" ${cf}/>
+        <circle cx="127" cy="70" r="6" fill="#E88A2C" ${cf}/>
+        <circle cx="127" cy="70" r="2.4" fill="#26221C" ${cf}/>
+        <circle cx="130" cy="120" r="8" fill="#12213A" ${ch}/>
+        <circle cx="130" cy="120" r="5" fill="#E86A2C" ${ch}/>
+        <circle cx="132" cy="118" r="1.8" fill="#F0E4C8" ${ch}/>
+        <circle cx="146" cy="128" r="5" fill="#12213A" ${ch}/>
+        <circle cx="146" cy="128" r="2.6" fill="#C85028" ${ch}/>
+        <path d="${FW}" fill="none" stroke="#4A4030" stroke-width="4" ${cf}/>`;
       default: return '';
     }
   }
