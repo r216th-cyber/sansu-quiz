@@ -399,7 +399,13 @@
     {key:'janome',   name:'ジャノメチョウ',   tier:1, base:'#5E4E3E', body:'#3A3026'},
     {key:'tateha',   name:'タテハモドキ',     tier:2, base:'#E0912E', body:'#5A4028'},
     {key:'oohikage', name:'オオヒカゲ',       tier:2, base:'#8A7A62', body:'#4A4034'},
-    {key:'aotateha', name:'アオタテハモドキ', tier:3, base:'#3A362E', hind:'#2E6BC8', body:'#2A2620'}
+    {key:'aotateha', name:'アオタテハモドキ', tier:3, base:'#3A362E', hind:'#2E6BC8', body:'#2A2620'},
+    /* --- extra species (appended last to keep save-code indexes stable) --- */
+    {key:'maeaka',     name:'マエアカヒトリ',   tier:1, base:'#F4F2EA', body:'#C84A34'},
+    {key:'komurasaki', name:'コムラサキ',       tier:3, base:'#3A2E44', body:'#241C2E'},
+    {key:'suminagashi', name:'スミナガシ',      tier:3, base:'#22262E', body:'#14161C'},
+    {key:'fukurou',    name:'フクロウチョウ',   tier:4, base:'#6A5240', body:'#3A2C1E'},
+    {key:'yonaguni',   name:'ヨナグニサン',     tier:5, base:'#8A4A2C', body:'#3A2418'}
   ];
   const RAISED = SPECIES.filter(s => s.raise);
   const TIER_LABEL = {1:'よくみる', 2:'ときどき', 3:'レア', 4:'ちょうレア', 5:'でんせつ'};
@@ -641,6 +647,45 @@
         <circle cx="146" cy="128" r="5" fill="#12213A" ${ch}/>
         <circle cx="146" cy="128" r="2.6" fill="#C85028" ${ch}/>
         <path d="${FW}" fill="none" stroke="#4A4030" stroke-width="4" ${cf}/>`;
+      case 'maeaka': return `
+        <path d="M100,88 C120,66 146,44 176,28" stroke="#E0402C" stroke-width="7" fill="none" stroke-linecap="round" ${cf}/>
+        <circle cx="140" cy="62" r="3" fill="#2A2622"/>
+        <circle cx="150" cy="52" r="2.4" fill="#2A2622"/>
+        <circle cx="128" cy="120" r="2.6" fill="#2A2622"/>`;
+      case 'komurasaki': return `
+        <path d="${FW}" fill="url(#${u}gp)" ${cf}/>
+        <path d="${HW}" fill="url(#${u}gp)" ${ch}/>
+        <g fill="#F2EEE6"><circle cx="158" cy="46" r="3"/><circle cx="150" cy="58" r="3"/><circle cx="166" cy="60" r="2.5"/><circle cx="140" cy="52" r="2.5"/></g>
+        <circle cx="150" cy="76" r="5" fill="#3A2C22"/><circle cx="150" cy="76" r="2.6" fill="#E88A3C"/>
+        <circle cx="134" cy="122" r="5.5" fill="#3A2C22"/><circle cx="134" cy="122" r="3" fill="#E88A3C"/>
+        <circle cx="135" cy="120" r="1.2" fill="#F2E0C0"/>`;
+      case 'suminagashi': return `
+        <g fill="#C8D4CE">
+          <circle cx="150" cy="44" r="2.6"/><circle cx="162" cy="54" r="2.4"/><circle cx="140" cy="52" r="2.4"/>
+          <circle cx="152" cy="66" r="2.6"/><circle cx="167" cy="70" r="2.2"/><circle cx="130" cy="66" r="2.4"/>
+          <circle cx="124" cy="80" r="2.2"/><circle cx="144" cy="78" r="2.2"/>
+          <circle cx="126" cy="116" r="2.6"/><circle cx="140" cy="122" r="2.6"/><circle cx="150" cy="130" r="2.2"/>
+          <circle cx="132" cy="132" r="2"/>
+        </g>
+        <g stroke="#9FB0AA" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M120,58 L134,56" ${cf}/><path d="M156,58 L170,60" ${cf}/>
+        </g>`;
+      case 'fukurou': return `
+        <circle cx="130" cy="122" r="15" fill="#D8A840" ${ch}/>
+        <circle cx="130" cy="122" r="11" fill="#1A1410" ${ch}/>
+        <circle cx="130" cy="122" r="6" fill="#3A2E22" ${ch}/>
+        <circle cx="133" cy="118" r="3" fill="#EAEAE0" ${ch}/>
+        <g stroke="#3A2C20" stroke-width="3" fill="none" ${cf}>
+          <path d="M104,88 C124,74 146,60 170,44"/><path d="M108,94 C128,84 150,72 176,58"/>
+        </g>
+        <path d="${HW}" fill="none" stroke="#4A3826" stroke-width="4" ${ch}/>`;
+      case 'yonaguni': return `
+        <path d="M150,44 L166,54 L150,66 L140,54 Z" fill="#F2E4C8" opacity=".85" ${cf}/>
+        <path d="M126,118 L140,112 L146,126 L130,132 Z" fill="#F2E4C8" opacity=".85" ${ch}/>
+        <path d="M106,88 C124,72 146,54 172,36" stroke="#3A1E12" stroke-width="4" fill="none" ${cf}/>
+        <path d="M170,30 L186,30 L184,46 Z" fill="#2A1810" ${cf}/>
+        <path d="${FW}" fill="none" stroke="#C89A6A" stroke-width="4" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#C89A6A" stroke-width="4" ${ch}/>`;
       default: return '';
     }
   }
