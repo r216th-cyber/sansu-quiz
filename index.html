@@ -157,6 +157,8 @@
   .bf-rarity small{color:var(--muted); letter-spacing:0; margin-left:6px; font-size:.8rem}
   .bf-hint{text-align:center; color:var(--muted); font-size:.85rem; margin:8px 0 0; text-wrap:balance}
   .best-badge{text-align:center; font-weight:800; color:var(--sango); margin:4px 0 0}
+  .grade-badge{text-align:center; font-weight:800; font-size:1.05rem; margin:8px 0 0; text-wrap:balance}
+  .grade-badge small{font-size:.78rem}
   .btn-row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
   .hatch-head{text-align:center; font-size:1.3rem; font-weight:800; margin:0; color:var(--sango); text-wrap:balance}
 
@@ -250,8 +252,8 @@
     <div class="card">
       <div class="label">コース</div>
       <div class="choice-row" role="group" aria-label="コース">
-        <button class="pick" data-course="10" aria-pressed="true"><span class="big">🌱</span>10もん おためし<small>きがるに チャレンジ</small></button>
-        <button class="pick" data-course="55" aria-pressed="false"><span class="big">⏱️</span>55もん タイムアタック<small>レアな ちょうちょが でやすい！</small></button>
+        <button class="pick" data-course="10" aria-pressed="true"><span class="big">🌱</span>10もん おためし<small>はやく ぜんもんせいかいで レア！</small></button>
+        <button class="pick" data-course="55" aria-pressed="false"><span class="big">⏱️</span>55もん タイムアタック<small>はやく たくさんせいかいで レア！</small></button>
       </div>
     </div>
     <button class="go-btn" id="startBtn">スタート！</button>
@@ -281,6 +283,7 @@
       <p class="bf-rarity" id="bfRarity"></p>
       <p class="best-badge" id="bestBadge" hidden>✨ ベストきろく こうしん！</p>
       <div class="result-stats" id="resultStats"></div>
+      <p class="grade-badge" id="gradeBadge" hidden></p>
       <p class="bf-hint" id="bfHint"></p>
     </div>
     <div class="card" id="gardenResult"></div>
@@ -1212,14 +1215,43 @@
   }
 
   /* ================= result ================= */
-  /* rarity drop rates (%) — gentle odds for 1st graders */
+  /* rarity drop rates (%) by reward level 0..4 — faster & more accurate -> rarer.
+     Top level (4) target: 10もん=20びょう+ぜんもんせいかい / 55もん=3ぷん+8わりせいかい.
+     Each row is [tier1, tier2, tier3, tier4, tier5], summing to 100. */
   const DROP_W = {
-    10: [[1, 40], [2, 30], [3, 18], [4, 8], [5, 4]],
-    55: [[1, 30], [2, 28], [3, 22], [4, 13], [5, 7]]
+    10: [
+      [55, 28, 12,  4,  1],
+      [45, 30, 17,  6,  2],
+      [33, 30, 22, 11,  4],
+      [22, 28, 28, 15,  7],
+      [12, 22, 30, 22, 14]
+    ],
+    55: [
+      [45, 30, 17,  6,  2],
+      [33, 30, 22, 11,  4],
+      [22, 28, 28, 15,  7],
+      [12, 24, 30, 22, 12],
+      [ 6, 16, 30, 28, 20]
+    ]
   };
-  function pickTier(c){
+  /* graded reward level 0..4 from speed (raw seconds) AND accuracy; both must be high (min). */
+  const GRADE_LABEL = {0:'', 1:'いいね！', 2:'じょうず！', 3:'すごい！', 4:'パーフェクト！'};
+  function rewardLevel(course, sec, correct, total){
+    let speed, acc;
+    if(course === 10){
+      speed   = sec <= 20 ? 4 : sec <= 28 ? 3 : sec <= 40 ? 2 : sec <= 60 ? 1 : 0;
+      acc     = correct >= 10 ? 4 : correct >= 9 ? 3 : correct >= 8 ? 2 : correct >= 6 ? 1 : 0;
+    }else{
+      const r = correct / total;
+      speed   = sec <= 180 ? 4 : sec <= 225 ? 3 : sec <= 290 ? 2 : sec <= 380 ? 1 : 0;
+      acc     = r >= 0.80 ? 4 : r >= 0.70 ? 3 : r >= 0.55 ? 2 : r >= 0.40 ? 1 : 0;
+    }
+    return Math.min(speed, acc);
+  }
+  function pickTier(course, level){
+    const table = DROP_W[course][level];
     let r = Math.random() * 100;
-    for(const [t, p] of DROP_W[c]){ if((r -= p) < 0) return t; }
+    for(let t = 0; t < 5; t++){ if((r -= table[t]) < 0) return t + 1; }
     return 1;
   }
 
@@ -1229,10 +1261,12 @@
     const elapsed = (performance.now() - startT) / 1000;
     const finalTime = elapsed + misses * PENALTY;
     const total = quizSet.length;
+    const correct = total - misses;
     const t = todayISO();
 
-    /* --- caught butterfly (random by rarity) --- */
-    const tier = pickTier(course);
+    /* --- caught butterfly (rarity boosted by speed + accuracy) --- */
+    const level = rewardLevel(course, elapsed, correct, total);
+    const tier = pickTier(course, level);
     const pool = SPECIES.filter(s => s.tier === tier && !s.raise && (!s.sub || mode === 'sub'));
     const sp = pool[ri(pool.length)];
     data.hist.push({d: t, n: sp.name});
@@ -1282,13 +1316,25 @@
     bb.hidden = !(isBest || isDayBest);
     bb.textContent = isBest ? '✨ ベストきろく こうしん！' : '✨ きょうの ベストきろく！';
     $('resultStats').innerHTML =
-      '<span>せいかい <b>' + (total - misses) + '</b>/' + total + '</span>' +
+      '<span>せいかい <b>' + correct + '</b>/' + total + '</span>' +
       '<span>タイム <b>' + fmtJa(finalTime) + '</b>' +
       (misses ? ' <span style="font-size:.8rem">(まちがい' + misses + 'かい +' + misses * PENALTY + 'びょう)</span>' : '') +
       '</span>';
+    const gradeColors = ['', 'var(--wakaba)', 'var(--sora)', 'var(--sango)', 'var(--himawari)'];
+    const gb2 = $('gradeBadge');
+    if(level >= 1){
+      gb2.hidden = false;
+      gb2.style.color = gradeColors[level];
+      gb2.innerHTML = (level >= 4 ? '🏅 ' : '⭐ '.repeat(level)) + GRADE_LABEL[level] +
+        (level >= 2 ? ' <small style="color:var(--muted);font-weight:600">レアが でやすい！</small>' : '');
+    }else{
+      gb2.hidden = true;
+    }
     $('bfHint').textContent =
       tier === 5 ? 'せかいでも めったに あえない ちょうちょだよ！ おめでとう！！'
-      : 'つぎは どんな ちょうちょが くるかな？';
+      : level >= 4 ? 'はやくて ぜんぶ せいかい！ さいこうの ごほうびだよ！'
+      : level >= 1 ? 'もっと はやく せいかいすると レアが でやすくなるよ！'
+      : 'はやく せいかいすると レアな ちょうちょが でやすいよ！';
 
     /* --- render garden --- */
     const gr = $('gardenResult');
@@ -1336,7 +1382,7 @@
 
     show('result');
     if(!hatchedSp) sndFanfare();
-    if((tier >= 4 || hatchedSp) && !reduceMotion) confetti();
+    if((tier >= 4 || hatchedSp || level >= 4) && !reduceMotion) confetti();
     if(needRest()) showRest();
   }
 
