@@ -415,7 +415,15 @@
     {key:'tsumabeni', name:'ツマベニチョウ',  tier:3, base:'#F6F4EC', body:'#4A463E'},
     {key:'ishigake', name:'イシガケチョウ',   tier:3, base:'#F0EEE4', body:'#5A554C'},
     {key:'futao',    name:'フタオチョウ',     tier:4, base:'#DDE4CE', body:'#3A322A'},
-    {key:'konoha',   name:'コノハチョウ',     tier:4, base:'#3A2E38', hind:'#2E2A34', body:'#241E28'}
+    {key:'konoha',   name:'コノハチョウ',     tier:4, base:'#3A2E38', hind:'#2E2A34', body:'#241E28'},
+    /* --- swallowtails & tigers (appended last to keep save-code indexes stable) --- */
+    {key:'hiodoshi', name:'ヒオドシチョウ',   tier:2, base:'#D2661E', body:'#3A2418'},
+    {key:'karasu',   name:'カラスアゲハ',     tier:3, base:'#141A16', body:'#0E1310', tail:true, tailC:'#141A16'},
+    {key:'nagasaki', name:'ナガサキアゲハ',   tier:3, base:'#201E22', body:'#141216'},
+    {key:'sujiguro', name:'スジグロカバマダラ', tier:3, base:'#E27A24', body:'#2A211A'},
+    {key:'benimon',  name:'ベニモンアゲハ',   tier:4, base:'#22201E', body:'#B83028', tail:true, tailC:'#22201E'},
+    {key:'jakou',    name:'ジャコウアゲハ',   tier:4, base:'#2A2622', body:'#C0344A', tail:true, tailC:'#2A2622'},
+    {key:'mikado',   name:'ミカドアゲハ',     tier:4, base:'#1E2420', body:'#141812', tail:true, tailC:'#1E2420'}
   ];
   const RAISED = SPECIES.filter(s => s.raise);
   const TIER_LABEL = {1:'よくみる', 2:'ときどき', 3:'レア', 4:'ちょうレア', 5:'でんせつ'};
@@ -734,6 +742,50 @@
         <circle cx="176" cy="36" r="3" fill="#EAEAF0" ${cf}/>
         <path d="${FW}" fill="url(#${u}gp)" opacity=".4" ${cf}/>
         <path d="${HW}" fill="url(#${u}gp)" opacity=".4" ${ch}/>`;
+      case 'hiodoshi': return `
+        <path d="${FW}" fill="none" stroke="#3A2418" stroke-width="9" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#3A2418" stroke-width="8" ${ch}/>
+        <g fill="#2A1E14"><circle cx="140" cy="52" r="4"/><circle cx="128" cy="66" r="3.5"/><circle cx="152" cy="60" r="3.5"/></g>
+        <g fill="#4A78C8"><circle cx="176" cy="40" r="2.4"/><circle cx="170" cy="54" r="2.4"/><circle cx="150" cy="140" r="2.4"/><circle cx="136" cy="146" r="2.4"/></g>`;
+      case 'karasu': return `
+        <path d="${FW}" fill="url(#${u}gm)" opacity=".5" ${cf}/>
+        <path d="${HW}" fill="url(#${u}gm)" opacity=".55" ${ch}/>
+        <g fill="#3ECF9E" opacity=".8"><circle cx="140" cy="60" r="2"/><circle cx="152" cy="52" r="2"/><circle cx="128" cy="72" r="2"/><circle cx="130" cy="118" r="2"/><circle cx="144" cy="124" r="2"/></g>
+        <circle cx="150" cy="140" r="3.5" fill="#E05A50"/>`;
+      case 'nagasaki': return `
+        <g fill="#EAE6DC">
+          <path d="M108,104 C120,116 130,132 136,150 L126,150 C118,134 110,120 104,110 Z" ${ch}/>
+          <path d="M120,104 C130,118 138,134 142,150 L134,150 C128,136 122,122 116,108 Z" ${ch}/>
+        </g>
+        <circle cx="112" cy="100" r="3.5" fill="#D83A3A"/>
+        <circle cx="150" cy="86" r="3" fill="#D83A3A"/>
+        <path d="${HW}" fill="none" stroke="#3A363C" stroke-width="6" ${ch}/>`;
+      case 'sujiguro': return `
+        <g stroke="#2A211A" stroke-width="3.5" fill="none" ${cf}>
+          <path d="M104,88 C122,68 144,48 172,30"/><path d="M108,92 C128,76 152,58 180,42"/>
+          <path d="M112,94 C134,84 158,72 184,58"/>
+        </g>
+        <g stroke="#2A211A" stroke-width="3.5" fill="none" ${ch}>
+          <path d="M106,102 C122,110 138,120 150,134"/><path d="M108,108 C120,120 130,134 140,148"/>
+        </g>
+        <path d="${FW}" fill="none" stroke="#2A211A" stroke-width="9" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#2A211A" stroke-width="8" ${ch}/>
+        <g fill="#FFFFFF"><circle cx="176" cy="34" r="2.4"/><circle cx="182" cy="48" r="2.4"/><circle cx="150" cy="140" r="2.2"/><circle cx="136" cy="146" r="2.2"/></g>`;
+      case 'benimon': return `
+        <path d="${FW}" fill="none" stroke="#3A3632" stroke-width="10" ${cf}/>
+        <g fill="#E8E4DA"><circle cx="126" cy="116" r="5"/><circle cx="138" cy="120" r="4.5"/></g>
+        <g fill="#D83A3A"><circle cx="124" cy="140" r="4"/><circle cx="137" cy="146" r="4"/><circle cx="150" cy="141" r="4"/></g>
+        <circle cx="150" cy="126" r="3.5" fill="#D83A3A"/>`;
+      case 'jakou': return `
+        <path d="${FW}" fill="none" stroke="#4A4640" stroke-width="8" ${cf}/>
+        <g fill="#E85A72"><circle cx="122" cy="140" r="4"/><circle cx="135" cy="146" r="4"/><circle cx="148" cy="142" r="4"/></g>
+        <circle cx="150" cy="126" r="3.5" fill="#E85A72"/>
+        <circle cx="112" cy="98" r="3" fill="#D83A48"/>`;
+      case 'mikado': return `
+        <g fill="#CDE4C0">
+          <circle cx="126" cy="72" r="4"/><circle cx="136" cy="62" r="4"/><circle cx="146" cy="54" r="4"/><circle cx="158" cy="46" r="3.5"/><circle cx="170" cy="40" r="3"/>
+          <circle cx="126" cy="116" r="4"/><circle cx="138" cy="122" r="4"/><circle cx="150" cy="128" r="3.5"/>
+        </g>`;
       default: return '';
     }
   }
@@ -850,6 +902,8 @@
     if(!d || !Array.isArray(d.hist)) d = {hist: [], best: {}};
     if(!d.best) d.best = {};
     if(!d.daily || typeof d.daily !== 'object') d.daily = {};
+    if(!d.bestMiss || typeof d.bestMiss !== 'object') d.bestMiss = {};
+    if(!d.dailyMiss || typeof d.dailyMiss !== 'object') d.dailyMiss = {};
     if(!Array.isArray(d.played)) d.played = [];
     if(!d.garden || !spByKey(d.garden.sp)) d.garden = newEgg();
     if(typeof d.garden.bonusDay !== 'string') d.garden.bonusDay = '';
@@ -870,8 +924,11 @@
     const dl = [];
     Object.keys(data.daily).forEach(d =>
       Object.keys(data.daily[d]).forEach(k => dl.push([dayNum(d), k, data.daily[d][k]])));
+    const dm = [];
+    Object.keys(data.dailyMiss).forEach(d =>
+      Object.keys(data.dailyMiss[d]).forEach(k => dm.push([dayNum(d), k, data.dailyMiss[d][k]])));
     const obj = {
-      v: 2,
+      v: 3,
       h: data.hist.map(x => [dayNum(x.d), idx[x.n], x.r ? 1 : 0]),
       p: data.played.map(dayNum),
       g: [SPECIES.findIndex(s => s.key === data.garden.sp), data.garden.days,
@@ -879,19 +936,26 @@
           data.garden.bonusDay ? dayNum(data.garden.bonusDay) : null],
       b: data.best,
       dl: dl,
+      bm: data.bestMiss,
+      dm: dm,
       lh: data.lastHatch ? [dayNum(data.lastHatch.d), SPECIES.findIndex(s => s.key === data.lastHatch.sp)] : null
     };
     return btoa(JSON.stringify(obj));
   }
   function decodeSave(code){
     const obj = JSON.parse(atob(code.replace(/\s/g, '')));
-    if((obj.v !== 1 && obj.v !== 2) || !Array.isArray(obj.h) || !Array.isArray(obj.g)) throw new Error('bad');
+    if(![1, 2, 3].includes(obj.v) || !Array.isArray(obj.h) || !Array.isArray(obj.g)) throw new Error('bad');
     const gsp = SPECIES[obj.g[0]];
     if(!gsp || !gsp.raise) throw new Error('bad');
     const daily = {};
     (obj.dl || []).forEach(x => {
       const d = numDay(x[0]);
       (daily[d] = daily[d] || {})[x[1]] = +x[2];
+    });
+    const dailyMiss = {};
+    (obj.dm || []).forEach(x => {
+      const d = numDay(x[0]);
+      (dailyMiss[d] = dailyMiss[d] || {})[x[1]] = +x[2];
     });
     const res = {
       hist: obj.h.map(x => {
@@ -905,7 +969,9 @@
       garden: {sp: gsp.key, days: +obj.g[1] || 0, lastFed: obj.g[2] === null ? '' : numDay(obj.g[2]),
                bonusDay: obj.g[3] == null ? '' : numDay(obj.g[3])},
       best: obj.b || {},
-      daily: daily
+      daily: daily,
+      bestMiss: obj.bm || {},
+      dailyMiss: dailyMiss
     };
     if(obj.lh && SPECIES[obj.lh[1]]) res.lastHatch = {d: numDay(obj.lh[0]), sp: SPECIES[obj.lh[1]].key};
     return res;
@@ -1022,12 +1088,19 @@
     return larvaSVG(sp, g.days, size);
   }
   function renderToday(){
-    const dt = data.daily[todayISO()] || {};
-    const row = (label, key) =>
-      '<div class="rec-row"><span>' + label + '</span>' +
-      (key in dt ? '<b>' + fmtJa(dt[key]) + '</b>' : '<b class="no">まだ</b>') + '</div>';
+    const ti = todayISO();
+    const dt = data.daily[ti] || {};
+    const dm = data.dailyMiss[ti] || {};
+    const row = (label, key) => {
+      let val;
+      if(key in dt){
+        val = '<b>' + fmtJa(dt[key]) + '</b>';
+        if(key in dm) val += ' <span style="color:var(--muted);font-size:.8rem">／ まちがい ' + dm[key] + 'こ</span>';
+      }else val = '<b class="no">まだ</b>';
+      return '<div class="rec-row"><span>' + label + '</span>' + val + '</div>';
+    };
     $('todayRec').innerHTML =
-      '<div class="label">きょうの ベストタイム ⏱</div>' +
+      '<div class="label">きょうの ベストきろく ⏱</div>' +
       row('➕ たしざん 55もん', 'add55') +
       row('➖ ひきざん 55もん', 'sub55');
   }
@@ -1279,6 +1352,11 @@
     const isDayBest = !(bestKey in data.daily[t]) || finalTime < data.daily[t][bestKey];
     if(isDayBest) data.daily[t][bestKey] = Math.round(finalTime * 10) / 10;
 
+    /* --- fewest mistakes (all-time and today), tracked independently of time --- */
+    if(!data.dailyMiss[t]) data.dailyMiss[t] = {};
+    if(!(bestKey in data.dailyMiss[t]) || misses < data.dailyMiss[t][bestKey]) data.dailyMiss[t][bestKey] = misses;
+    if(!(bestKey in data.bestMiss) || misses < data.bestMiss[bestKey]) data.bestMiss[bestKey] = misses;
+
     /* --- garden growth --- */
     if(!data.played.includes(t)) data.played.push(t);
     const hatchedToday = !!(data.lastHatch && data.lastHatch.d === t);
@@ -1417,11 +1495,15 @@
         const li = document.createElement('li');
         let timesHtml = '';
         const dt = data.daily[d];
+        const dmi = data.dailyMiss[d] || {};
         if(dt){
-          const parts = Object.keys(dt).sort().map(k =>
-            (k.indexOf('add') === 0 ? 'たしざん' : 'ひきざん') + k.slice(3) + 'もん ' + fmtJa(dt[k]));
+          const parts = Object.keys(dt).sort().map(k => {
+            let s = (k.indexOf('add') === 0 ? 'たしざん' : 'ひきざん') + k.slice(3) + 'もん ' + fmtJa(dt[k]);
+            if(k in dmi) s += '(まちがい' + dmi[k] + 'こ)';
+            return s;
+          });
           if(parts.length)
-            timesHtml = '<br><small style="color:var(--muted)">⏱ ベストタイム: ' + parts.join(' ／ ') + '</small>';
+            timesHtml = '<br><small style="color:var(--muted)">⏱ ベストきろく: ' + parts.join(' ／ ') + '</small>';
         }
         li.innerHTML = '<span class="hd">' + isoToJa(d) + '</span>' + byDate[d].join('、') + timesHtml;
         list.appendChild(li);
