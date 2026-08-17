@@ -423,7 +423,14 @@
     {key:'sujiguro', name:'スジグロカバマダラ', tier:3, base:'#E27A24', body:'#2A211A'},
     {key:'benimon',  name:'ベニモンアゲハ',   tier:4, base:'#22201E', body:'#B83028', tail:true, tailC:'#22201E'},
     {key:'jakou',    name:'ジャコウアゲハ',   tier:4, base:'#2A2622', body:'#C0344A', tail:true, tailC:'#2A2622'},
-    {key:'mikado',   name:'ミカドアゲハ',     tier:4, base:'#1E2420', body:'#141812', tail:true, tailC:'#1E2420'}
+    {key:'mikado',   name:'ミカドアゲハ',     tier:4, base:'#1E2420', body:'#141812', tail:true, tailC:'#1E2420'},
+    /* --- more raised (mushikago) species (appended last to keep save-code indexes stable) --- */
+    {key:'hecuba', name:'ヘクバモルフォ', tier:5, raise:true, base:'#6A5648', hind:'#4A3E36', body:'#241C16',
+      larva:{body:'#7A4A3A', ring:'#A86A4A', dots:'#E8C060'}, pupa:'#9AAE88'},
+    {key:'oorurimadara', name:'オオルリマダラ', tier:5, raise:true, base:'#1E2230', body:'#141824',
+      larva:{body:'#2A2A2A', ring:'#E8E4DA', dots:'#E0483C'}, pupa:'#E8C24C'},
+    {key:'uraginageha', name:'ウラギンアゲハ', tier:5, raise:true, base:'#26262A', body:'#161618', tail:true, tailC:'#26262A',
+      larva:{body:'#4E8A4A', ring:'#6EA85E', dots:'#E8D050'}, pupa:'#8A9A6A'}
   ];
   const RAISED = SPECIES.filter(s => s.raise);
   const TIER_LABEL = {1:'よくみる', 2:'ときどき', 3:'レア', 4:'ちょうレア', 5:'でんせつ'};
@@ -786,6 +793,23 @@
           <circle cx="126" cy="72" r="4"/><circle cx="136" cy="62" r="4"/><circle cx="146" cy="54" r="4"/><circle cx="158" cy="46" r="3.5"/><circle cx="170" cy="40" r="3"/>
           <circle cx="126" cy="116" r="4"/><circle cx="138" cy="122" r="4"/><circle cx="150" cy="128" r="3.5"/>
         </g>`;
+      case 'hecuba': return `
+        <path d="M108,90 C124,74 146,56 172,40 C176,52 168,70 150,84 C136,92 120,94 110,94 Z" fill="#9FB8C8" opacity=".7" ${cf}/>
+        <path d="${HW}" fill="#8AA6B8" opacity=".5" ${ch}/>
+        <g fill="#2A221C"><circle cx="150" cy="60" r="2.6"/><circle cx="162" cy="70" r="2.4"/><circle cx="132" cy="122" r="3"/><circle cx="146" cy="128" r="2.6"/></g>
+        <path d="${FW}" fill="none" stroke="#2A221C" stroke-width="5" ${cf}/>`;
+      case 'oorurimadara': return `
+        <path d="${FW}" fill="url(#${u}gb)" opacity=".45" ${cf}/>
+        <path d="${HW}" fill="url(#${u}gb)" opacity=".4" ${ch}/>
+        <g fill="#EAEFF6"><circle cx="150" cy="50" r="2.4"/><circle cx="162" cy="60" r="2.2"/><circle cx="140" cy="66" r="2.2"/><circle cx="168" cy="46" r="2"/>
+          <circle cx="130" cy="118" r="2.4"/><circle cx="144" cy="124" r="2.2"/><circle cx="126" cy="130" r="2"/></g>`;
+      case 'uraginageha': return `
+        <g fill="#DCE0E4">
+          <path d="M110,104 C122,116 132,132 138,150 L128,150 C120,134 112,120 106,110 Z" ${ch}/>
+          <circle cx="150" cy="120" r="5"/><circle cx="140" cy="130" r="4"/>
+        </g>
+        <path d="M108,88 C126,74 146,58 168,44" stroke="#C8CCD2" stroke-width="4" fill="none" ${cf}/>
+        <path d="${FW}" fill="none" stroke="#3A3A40" stroke-width="6" ${cf}/>`;
       default: return '';
     }
   }
