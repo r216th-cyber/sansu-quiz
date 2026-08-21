@@ -430,7 +430,13 @@
     {key:'oorurimadara', name:'オオルリマダラ', tier:5, raise:true, base:'#1E2230', body:'#141824',
       larva:{body:'#2A2A2A', ring:'#E8E4DA', dots:'#E0483C'}, pupa:'#E8C24C'},
     {key:'uraginageha', name:'ウラギンアゲハ', tier:5, raise:true, base:'#26262A', body:'#161618', tail:true, tailC:'#26262A',
-      larva:{body:'#4E8A4A', ring:'#6EA85E', dots:'#E8D050'}, pupa:'#8A9A6A'}
+      larva:{body:'#4E8A4A', ring:'#6EA85E', dots:'#E8D050'}, pupa:'#8A9A6A'},
+    /* --- exotic catchable species (appended last to keep save-code indexes stable) --- */
+    {key:'ryukyu',    name:'リュウキュウアサギマダラ', tier:3, base:'#BFD6D6', body:'#2A2622'},
+    {key:'takane',    name:'タカネクジャクアゲハ', tier:4, base:'#14181C', body:'#0E1114', tail:true, tailC:'#14181C'},
+    {key:'ooruriobi', name:'オオルリオビアゲハ', tier:4, base:'#14161E', body:'#0E1016', tail:true, tailC:'#14161E'},
+    {key:'leilus',    name:'レイルスニシキツバメガ', tier:5, base:'#141A18', body:'#0C100E', tail:true, tailC:'#E8E4DA'},
+    {key:'priam',     name:'プリアムストリバネアゲハ', tier:5, base:'#12140F', body:'#0A0C08'}
   ];
   const RAISED = SPECIES.filter(s => s.raise);
   const TIER_LABEL = {1:'よくみる', 2:'ときどき', 3:'レア', 4:'ちょうレア', 5:'でんせつ'};
@@ -810,6 +816,40 @@
         </g>
         <path d="M108,88 C126,74 146,58 168,44" stroke="#C8CCD2" stroke-width="4" fill="none" ${cf}/>
         <path d="${FW}" fill="none" stroke="#3A3A40" stroke-width="6" ${cf}/>`;
+      case 'ryukyu': return `
+        <g stroke="#2E2A26" stroke-width="3" fill="none" ${cf}>
+          <path d="M104,88 C124,70 146,50 172,32"/><path d="M108,92 C130,78 154,62 180,46"/>
+          <path d="M120,30 L128,94"/><path d="M148,26 L146,92"/><path d="M170,32 L164,84"/>
+        </g>
+        <g stroke="#2E2A26" stroke-width="3" fill="none" ${ch}>
+          <path d="M106,104 C122,112 138,122 150,136"/><path d="M124,100 L136,148"/><path d="M144,104 L150,146"/>
+        </g>
+        <path d="${FW}" fill="none" stroke="#2E2A26" stroke-width="7" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#2E2A26" stroke-width="6" ${ch}/>`;
+      case 'takane': return `
+        <path d="${FW}" fill="url(#${u}gb)" opacity=".35" ${cf}/>
+        <path d="${HW}" fill="url(#${u}gb)" opacity=".4" ${ch}/>
+        <g fill="#5ECFA8" opacity=".8"><circle cx="140" cy="60" r="2"/><circle cx="152" cy="52" r="2"/><circle cx="130" cy="72" r="2"/></g>
+        <g fill="#3E8AE0"><circle cx="126" cy="118" r="4"/><circle cx="138" cy="126" r="4"/><circle cx="150" cy="122" r="3.5"/></g>
+        <circle cx="150" cy="140" r="3.5" fill="#E05A50"/>`;
+      case 'ooruriobi': return `
+        <rect x="116" y="-10" width="30" height="220" fill="url(#${u}gb)" transform="rotate(20 131 100)" ${cf}/>
+        <rect x="116" y="-10" width="30" height="220" fill="url(#${u}gb)" transform="rotate(20 131 100)" ${ch}/>
+        <circle cx="150" cy="140" r="3" fill="#E8E4DA"/>`;
+      case 'leilus': return `
+        <g ${cf}>
+          <path d="M104,90 C120,72 140,54 164,40" stroke="url(#${u}gm)" stroke-width="6" fill="none"/>
+          <path d="M108,94 C126,80 148,64 172,50" stroke="url(#${u}gm)" stroke-width="5" fill="none" opacity=".8"/>
+        </g>
+        <g ${ch}>
+          <path d="M106,104 C120,112 134,124 146,140" stroke="url(#${u}gm)" stroke-width="6" fill="none"/>
+          <path d="M110,110 C122,122 132,134 140,148" stroke="url(#${u}gm)" stroke-width="5" fill="none" opacity=".8"/>
+        </g>`;
+      case 'priam': return `
+        <path d="M118,92 C132,72 152,54 172,42 C176,58 166,80 146,92 C136,97 126,96 118,94 Z" fill="#1EA85A" ${cf}/>
+        <ellipse cx="130" cy="120" rx="22" ry="17" fill="#1EA85A" ${ch}/>
+        <circle cx="130" cy="120" r="6" fill="#12140F" ${ch}/>
+        <path d="${HW}" fill="none" stroke="#12140F" stroke-width="7" ${ch}/>`;
       default: return '';
     }
   }
