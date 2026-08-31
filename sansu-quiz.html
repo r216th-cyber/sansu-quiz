@@ -425,7 +425,16 @@
     {key:'takane',    name:'タカネクジャクアゲハ', tier:4, base:'#14181C', body:'#0E1114', tail:true, tailC:'#14181C'},
     {key:'ooruriobi', name:'オオルリオビアゲハ', tier:4, base:'#14161E', body:'#0E1016', tail:true, tailC:'#14161E'},
     {key:'leilus',    name:'レイルスニシキツバメガ', tier:5, base:'#141A18', body:'#0C100E', tail:true, tailC:'#E8E4DA'},
-    {key:'priam',     name:'プリアムストリバネアゲハ', tier:5, base:'#12140F', body:'#0A0C08'}
+    {key:'priam',     name:'プリアムストリバネアゲハ', tier:5, base:'#12140F', body:'#0A0C08'},
+    /* --- familiar Japanese species (appended last to keep save-code indexes stable) --- */
+    {key:'sakahachi',  name:'サカハチチョウ',   tier:1, base:'#C86A2E', body:'#2E211A'},
+    {key:'shirohitori', name:'シロヒトリ',      tier:1, base:'#F8F6F0', body:'#C86A5A'},
+    {key:'ezoshiro',   name:'エゾシロチョウ',   tier:2, base:'#F6F4EE', body:'#4A463E'},
+    {key:'tengu',      name:'テングチョウ',     tier:2, base:'#5A4632', body:'#3A2E1E'},
+    {key:'kohiodoshi', name:'コヒオドシ',       tier:2, base:'#E06A22', body:'#2A1E14'},
+    {key:'benisuzume', name:'ベニスズメ',       tier:3, base:'#6E7A3A', body:'#C84A72'},
+    {key:'akaboshi',   name:'アカボシゴマダラ', tier:3, base:'#E8E8E2', body:'#242424'},
+    {key:'kiberi',     name:'キベリタテハ',     tier:4, base:'#4A2418', body:'#2A160E'}
   ];
   const RAISED = SPECIES.filter(s => s.raise);
   const TIER_LABEL = {1:'よくみる', 2:'ときどき', 3:'レア', 4:'ちょうレア', 5:'でんせつ'};
@@ -839,6 +848,53 @@
         <ellipse cx="130" cy="120" rx="22" ry="17" fill="#1EA85A" ${ch}/>
         <circle cx="130" cy="120" r="6" fill="#12140F" ${ch}/>
         <path d="${HW}" fill="none" stroke="#12140F" stroke-width="7" ${ch}/>`;
+      case 'sakahachi': return `
+        <path d="${FW}" fill="none" stroke="#2E211A" stroke-width="7" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#2E211A" stroke-width="6" ${ch}/>
+        <path d="M116,78 C132,66 150,54 170,44" stroke="#EDE6D8" stroke-width="5" fill="none" ${cf}/>
+        <path d="M112,116 C126,120 140,126 152,134" stroke="#EDE6D8" stroke-width="4" fill="none" ${ch}/>
+        <g fill="#2E211A"><circle cx="140" cy="58" r="3"/><circle cx="128" cy="70" r="2.6"/></g>`;
+      case 'shirohitori': return `
+        <path d="${FW}" fill="none" stroke="#C8C2B6" stroke-width="3" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#C8C2B6" stroke-width="3" ${ch}/>
+        <circle cx="120" cy="112" r="6" fill="#F0A8B8" ${ch}/>
+        <g fill="#3A3630"><circle cx="140" cy="58" r="2"/><circle cx="128" cy="72" r="2"/><circle cx="150" cy="70" r="1.8"/></g>`;
+      case 'ezoshiro': return `
+        <g stroke="#2E2A24" stroke-width="2.2" fill="none" ${cf}>
+          <path d="M104,88 C122,70 144,50 172,32"/><path d="M108,92 C128,76 152,58 180,42"/>
+          <path d="M112,94 C134,84 158,72 184,58"/>
+        </g>
+        <g stroke="#2E2A24" stroke-width="2.2" fill="none" ${ch}>
+          <path d="M106,102 C122,110 138,120 150,134"/><path d="M108,108 C120,120 130,134 140,148"/>
+        </g>
+        <path d="${FW}" fill="none" stroke="#2E2A24" stroke-width="3" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#2E2A24" stroke-width="3" ${ch}/>`;
+      case 'tengu': return `
+        <path d="M110,90 C124,74 142,58 160,46 L170,56 C154,68 138,82 124,94 Z" fill="#D2822C" ${cf}/>
+        <g fill="#F2ECE0"><circle cx="168" cy="40" r="2.6"/><circle cx="176" cy="48" r="2.2"/></g>
+        <path d="${HW}" fill="none" stroke="#3A2E1E" stroke-width="5" ${ch}/>
+        <path d="M100,60 L100,44" stroke="#3A2E1E" stroke-width="4" stroke-linecap="round"/>`;
+      case 'kohiodoshi': return `
+        <g fill="#2A1E14"><rect x="138" y="34" width="14" height="12" ${cf}/><rect x="120" y="52" width="12" height="11" ${cf}/><circle cx="150" cy="66" r="4"/></g>
+        <path d="${FW}" fill="none" stroke="#2A1E14" stroke-width="8" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#2A1E14" stroke-width="7" ${ch}/>
+        <g fill="#3A78D0"><circle cx="176" cy="42" r="2.4"/><circle cx="170" cy="56" r="2.4"/><circle cx="150" cy="140" r="2.4"/><circle cx="136" cy="146" r="2.4"/></g>`;
+      case 'benisuzume': return `
+        <path d="M100,86 C112,58 138,32 168,26 C186,23 195,35 189,52" stroke="#E85A9A" stroke-width="7" fill="none" ${cf}/>
+        <path d="M104,99 C122,97 147,101 159,115" stroke="#E85A9A" stroke-width="6" fill="none" ${ch}/>
+        <path d="M110,90 C128,72 150,52 176,40" stroke="#E85A9A" stroke-width="4" fill="none" ${cf}/>`;
+      case 'akaboshi': return `
+        <g stroke="#242424" stroke-width="5" fill="none" ${cf}>
+          <path d="M104,88 C122,68 146,46 174,30"/><path d="M110,94 C132,82 158,66 184,50"/>
+        </g>
+        <path d="${FW}" fill="none" stroke="#242424" stroke-width="7" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#242424" stroke-width="6" ${ch}/>
+        <g stroke="#242424" stroke-width="4" fill="none" ${ch}><path d="M106,104 C120,112 134,122 146,136"/></g>
+        <g fill="#D83A3A"><circle cx="150" cy="140" r="3.5"/><circle cx="136" cy="146" r="3.2"/><circle cx="124" cy="140" r="2.8"/></g>`;
+      case 'kiberi': return `
+        <path d="M100,86 C112,58 138,32 168,26 C186,23 195,35 189,52" stroke="#E8D26A" stroke-width="8" fill="none" ${cf}/>
+        <path d="M159,115 C169,127 165,147 148,151" stroke="#E8D26A" stroke-width="7" fill="none" ${ch}/>
+        <g fill="#3A6AC0"><circle cx="150" cy="46" r="2.6"/><circle cx="164" cy="42" r="2.6"/><circle cx="176" cy="44" r="2.4"/><circle cx="140" cy="128" r="2.6"/><circle cx="150" cy="134" r="2.4"/></g>`;
       default: return '';
     }
   }
