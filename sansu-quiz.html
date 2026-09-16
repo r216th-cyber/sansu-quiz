@@ -439,7 +439,13 @@
     {key:'tsubamega',   name:'ツバメガ',       tier:2, base:'#E8ECE0', body:'#7A7E70', tail:true, tailC:'#D8DCD0'},
     {key:'ooichimonji', name:'オオイチモンジ', tier:3, base:'#2A2622', body:'#161410'},
     {key:'usubaki',     name:'ウスバキチョウ', tier:4, base:'#F0E68A', body:'#6A6248'},
-    {key:'kuroesasu',   name:'クロエサスニシキツバメガ', tier:4, base:'#16181A', body:'#0C0E10', tail:true, tailC:'#D8D2C0'}
+    {key:'kuroesasu',   name:'クロエサスニシキツバメガ', tier:4, base:'#16181A', body:'#0C0E10', tail:true, tailC:'#D8D2C0'},
+    /* --- moths + one raised (appended last to keep save-code indexes stable) --- */
+    {key:'ebigara',  name:'エビガラスズメ',   tier:2, base:'#6E665A', body:'#4A443A'},
+    {key:'kirara',   name:'キララキシタバ',   tier:3, base:'#7A7266', hind:'#E8C22E', body:'#3A342A'},
+    {key:'shinju',   name:'シンジュサン',     tier:3, base:'#6A4A38', body:'#3A281E'},
+    {key:'oomizuao', name:'オオミズアオ', tier:5, raise:true, base:'#BFE0C8', hind:'#B6DAC0', body:'#E0DCD2', tail:true, tailC:'#BFE0C8',
+      larva:{body:'#8AB86A', ring:'#A8CE88', dots:'#E8A0B0'}, pupa:'#8A6A4A'}
   ];
   const RAISED = SPECIES.filter(s => s.raise);
   const TIER_LABEL = {1:'よくみる', 2:'ときどき', 3:'レア', 4:'ちょうレア', 5:'でんせつ'};
@@ -927,6 +933,31 @@
           <path d="M106,104 C120,112 134,124 146,140" stroke="url(#${u}gb)" stroke-width="6" fill="none"/>
           <path d="M110,110 C122,122 132,134 140,148" stroke="#E8C24A" stroke-width="3" fill="none" opacity=".85"/>
         </g>`;
+      case 'ebigara': return `
+        <g stroke="#3E3830" stroke-width="2.2" fill="none" ${cf}>
+          <path d="M108,84 L124,78 L134,86 L150,74 L164,82 L178,70"/>
+          <path d="M110,92 L128,88 L140,94 L158,84 L172,90"/>
+        </g>
+        <path d="${HW}" fill="none" stroke="#3E3830" stroke-width="4" ${ch}/>
+        <circle cx="120" cy="112" r="5" fill="#D8788A" ${ch}/>`;
+      case 'kirara': return `
+        <g stroke="#463F36" stroke-width="2" fill="none" ${cf}>
+          <path d="M108,86 C126,72 148,56 174,40"/><path d="M112,92 C132,82 154,70 180,58"/>
+          <path d="M140,30 L132,94"/>
+        </g>
+        <path d="${FW}" fill="none" stroke="#463F36" stroke-width="4" ${cf}/>
+        <path d="M108,108 C124,116 140,126 152,138" stroke="#2A2416" stroke-width="7" fill="none" ${ch}/>
+        <path d="${HW}" fill="none" stroke="#2A2416" stroke-width="5" ${ch}/>`;
+      case 'shinju': return `
+        <path d="M150,44 C158,50 160,60 154,68 C150,60 148,52 150,44 Z" fill="#E8DCC8" opacity=".8" ${cf}/>
+        <path d="M128,118 C136,122 138,132 132,140 C128,132 126,126 128,118 Z" fill="#E8DCC8" opacity=".8" ${ch}/>
+        <path d="M112,74 C130,64 150,54 172,44" stroke="#D8A0A8" stroke-width="4" fill="none" ${cf}/>
+        <path d="${FW}" fill="none" stroke="#3A281E" stroke-width="5" ${cf}/>
+        <path d="${HW}" fill="none" stroke="#3A281E" stroke-width="5" ${ch}/>`;
+      case 'oomizuao': return `
+        <path d="M102,86 C112,58 138,32 168,26" stroke="#B06A6A" stroke-width="5" fill="none" ${cf}/>
+        <circle cx="150" cy="56" r="6" fill="#F0EAD8"/><circle cx="150" cy="56" r="3.5" fill="#D8A84A"/><circle cx="150" cy="56" r="1.6" fill="#3A2E22"/>
+        <circle cx="128" cy="118" r="6" fill="#F0EAD8" ${ch}/><circle cx="128" cy="118" r="3.5" fill="#D8A84A" ${ch}/><circle cx="128" cy="118" r="1.6" fill="#3A2E22" ${ch}/>`;
       default: return '';
     }
   }
